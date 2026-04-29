@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unicode Styler PRO MAX</title>
+<title>Unicode Styler PRO MAX v2</title>
 
 <style>
 body{
@@ -15,14 +15,8 @@ body{
   padding:20px;
 }
 
-h1{
-  margin-bottom:5px;
-}
-
-.sub{
-  opacity:0.7;
-  margin-bottom:20px;
-}
+h1{margin-bottom:5px}
+.sub{opacity:0.7;margin-bottom:15px}
 
 textarea{
   width:100%;
@@ -32,7 +26,6 @@ textarea{
   border:none;
   font-size:16px;
   margin-bottom:10px;
-  outline:none;
 }
 
 .buttons{
@@ -49,11 +42,16 @@ button{
   border-radius:10px;
   cursor:pointer;
   font-weight:bold;
-  transition:0.2s;
 }
 
-button:hover{
-  transform:scale(1.05);
+button:hover{transform:scale(1.05)}
+
+.preview{
+  background:#0b1220;
+  padding:10px;
+  border-radius:12px;
+  margin-bottom:10px;
+  white-space:pre-wrap;
 }
 
 .card{
@@ -66,40 +64,21 @@ button:hover{
   align-items:center;
 }
 
-.name{
-  font-size:12px;
-  opacity:0.7;
-}
-
-.text{
-  font-size:16px;
-}
-
-.grid{
-  display:grid;
-  gap:10px;
-}
-
-.preview{
-  background:#0b1220;
-  padding:10px;
-  border-radius:12px;
-  margin-bottom:10px;
-  white-space:pre-wrap;
-}
+.name{font-size:12px;opacity:0.7}
+.text{font-size:16px}
 
 .history{
-  font-size:12px;
-  opacity:0.7;
   margin-top:10px;
+  font-size:12px;
+  opacity:0.6;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🚀 Unicode Styler PRO MAX</h1>
-<div class="sub">Live generator + styles + viral tools</div>
+<h1>🚀 Unicode Styler PRO MAX v2</h1>
+<div class="sub">Live generator + viral tools</div>
 
 <textarea id="input" placeholder="Wpisz tekst..." oninput="livePreview()"></textarea>
 
@@ -112,7 +91,7 @@ button:hover{
 
 <div class="preview" id="preview">Live preview...</div>
 
-<div id="out" class="grid"></div>
+<div id="out"></div>
 
 <div class="history" id="history"></div>
 
@@ -132,7 +111,7 @@ function convert(t,m){
 }
 
 function livePreview(){
- document.getElementById("preview").innerText=
+ document.getElementById("preview").innerText =
  document.getElementById("input").value || "Live preview...";
 }
 
@@ -158,9 +137,9 @@ function generate(){
   btn.innerText="Kopiuj";
   btn.onclick=()=>{
     navigator.clipboard.writeText(text);
+    saveHistory(text);
     btn.innerText="OK";
     setTimeout(()=>btn.innerText="Kopiuj",1000);
-    saveHistory(text);
   };
 
   div.appendChild(btn);
@@ -169,14 +148,22 @@ function generate(){
 }
 
 function fixIG(){
- document.getElementById("input").value=
+ document.getElementById("input").value =
  document.getElementById("input").value.replace(/\n/g,"\u2063");
 }
 
 function autoDesc(){
- const t=document.getElementById("input").value;
- document.getElementById("input").value=
- `🔥 ${t}\n\n✨ viral content\n📈 grow daily\n👇 follow`;
+ const input=document.getElementById("input");
+
+ let base=input.value.split("✨")[0].trim();
+ if(!base) return;
+
+ input.value =
+`🔥 ${base}
+
+✨ viral content
+📈 grow daily
+👇 follow for more`;
 }
 
 function exportText(){
@@ -198,7 +185,7 @@ function saveHistory(text){
 
 function renderHistory(){
  let h=JSON.parse(localStorage.getItem("history")||"[]");
- document.getElementById("history").innerText=
+ document.getElementById("history").innerText =
  "Historia:\n" + h.join("\n---\n");
 }
 
