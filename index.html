@@ -7,23 +7,24 @@
 
 <style>
 body{
-  font-family: Arial;
-  background:#0b1220;
+  font-family: Arial, sans-serif;
+  background:#0f172a;
   color:white;
   max-width:900px;
   margin:auto;
   padding:20px;
 }
 
-h1{margin-bottom:10px}
+h2{margin-bottom:10px}
 
 textarea{
   width:100%;
   height:120px;
-  padding:12px;
+  padding:10px;
   border-radius:10px;
   border:none;
   font-size:16px;
+  margin-bottom:10px;
 }
 
 button{
@@ -33,14 +34,14 @@ button{
   border-radius:10px;
   cursor:pointer;
   font-weight:bold;
-  margin:5px 5px 10px 0;
+  margin:5px;
 }
 
-.card{
+.box{
   background:#111827;
-  padding:12px;
-  margin-top:10px;
+  padding:10px;
   border-radius:10px;
+  margin-top:10px;
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -60,13 +61,13 @@ button{
 
 <body>
 
-<h1>🚀 Unicode Styler PRO</h1>
+<h2>🚀 Unicode Styler PRO</h2>
 
 <textarea id="input" placeholder="Wpisz tekst..."></textarea>
 
 <br>
 
-<button onclick="generate()">Generuj style</button>
+<button onclick="generate()">Generuj</button>
 
 <div id="out"></div>
 
@@ -102,12 +103,6 @@ function convert(text,map){
   return text.split('').map(c=>map[c.toLowerCase()]||c).join('');
 }
 
-function copy(text,btn){
-  navigator.clipboard.writeText(text);
-  btn.innerText="Skopiowano!";
-  setTimeout(()=>btn.innerText="Kopiuj",1000);
-}
-
 function generate(){
   const input=document.getElementById("input").value;
   const out=document.getElementById("out");
@@ -116,8 +111,8 @@ function generate(){
   Object.entries(styles).forEach(([name,map])=>{
     const text=convert(input,map);
 
-    const card=document.createElement("div");
-    card.className="card";
+    const box=document.createElement("div");
+    box.className="box";
 
     const left=document.createElement("div");
     left.innerHTML=`
@@ -127,11 +122,16 @@ function generate(){
 
     const btn=document.createElement("button");
     btn.innerText="Kopiuj";
-    btn.onclick=()=>copy(text,btn);
 
-    card.appendChild(left);
-    card.appendChild(btn);
-    out.appendChild(card);
+    btn.onclick=()=>{
+      navigator.clipboard.writeText(text);
+      btn.innerText="Skopiowano!";
+      setTimeout(()=>btn.innerText="Kopiuj",1000);
+    };
+
+    box.appendChild(left);
+    box.appendChild(btn);
+    out.appendChild(box);
   });
 }
 
