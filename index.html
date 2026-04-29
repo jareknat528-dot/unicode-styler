@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unicode Styler PRO FIX</title>
+<title>Unicode Styler PRO</title>
 
 <style>
 body{
@@ -34,7 +34,7 @@ button{
   border-radius:10px;
   cursor:pointer;
   font-weight:bold;
-  margin:5px;
+  margin:5px 5px 10px 0;
 }
 
 .box{
@@ -56,6 +56,10 @@ button{
 .text{
   font-size:16px;
 }
+
+.actions{
+  margin-bottom:10px;
+}
 </style>
 </head>
 
@@ -65,9 +69,12 @@ button{
 
 <textarea id="input" placeholder="Wpisz tekst..."></textarea>
 
-<br>
-
-<button onclick="generate()">Generuj</button>
+<div class="actions">
+  <button onclick="generate()">Generuj</button>
+  <button onclick="fixIG()">Napraw IG</button>
+  <button onclick="autoDesc()">🤖 Auto opis</button>
+  <button onclick="exportText()">💾 Eksport</button>
+</div>
 
 <div id="out"></div>
 
@@ -117,6 +124,31 @@ function generate(){
     box.appendChild(btn);
     out.appendChild(box);
   });
+}
+
+function fixIG(){
+  const t=document.getElementById("input");
+  t.value=t.value.replace(/\n/g,"\u2063");
+}
+
+function autoDesc(){
+  const text=document.getElementById("input").value;
+  const generated=`🔥 ${text}
+
+✨ Nowa jakość
+📈 Viral content
+👇 Follow for more`;
+
+  document.getElementById("input").value=generated;
+}
+
+function exportText(){
+  const content=document.getElementById("out").innerText;
+  const blob=new Blob([content],{type:"text/plain"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="unicode-styler.txt";
+  a.click();
 }
 
 </script>
