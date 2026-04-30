@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unicode Styler PRO MAX v10 SaaS</title>
+<title>Unicode Styler PRO MAX v12</title>
 
 <style>
 body{
@@ -15,29 +15,32 @@ body{
   padding:20px;
 }
 
-.hero{
-  background:#111827;
-  padding:15px;
-  border-radius:12px;
-  margin-bottom:10px;
+.nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 0;
 }
 
-h1{margin:0;font-size:20px}
-
-.sub{
-  opacity:0.7;
-  font-size:12px;
+.logo{font-weight:bold}
+.badge{
+  background:#22c55e;
+  color:black;
+  padding:3px 8px;
+  border-radius:8px;
+  font-size:11px;
 }
 
-textarea{
+input, textarea{
   width:100%;
-  height:110px;
-  border-radius:12px;
   border:none;
+  border-radius:10px;
   padding:10px;
-  font-size:16px;
   margin-top:10px;
+  font-size:14px;
 }
+
+textarea{height:110px}
 
 button{
   background:#22c55e;
@@ -63,17 +66,9 @@ button{
   align-items:center;
 }
 
-.badge{
+.small{
   font-size:11px;
-  padding:2px 6px;
-  background:#ef4444;
-  border-radius:6px;
-}
-
-.stats{
-  font-size:12px;
   opacity:0.7;
-  margin-top:5px;
 }
 
 .toast{
@@ -92,17 +87,18 @@ button{
 
 <body>
 
-<div class="hero">
-  <h1>🚀 Unicode Styler PRO MAX v10 SaaS</h1>
-  <div class="sub">viral text generator • TikTok ready • free SaaS clone</div>
+<div class="nav">
+  <div class="logo">🚀 Unicode Styler v12</div>
+  <div class="badge">FINAL POLISH</div>
 </div>
+
+<input id="search" placeholder="🔎 szukaj stylu..." oninput="render()">
 
 <textarea id="input" placeholder="Wpisz tekst..."></textarea>
 
 <div>
-  <button onclick="generate()">🔥 Generate SaaS</button>
-  <button onclick="fixIG()">IG Fix</button>
-  <button onclick="autoHook()">⚡ Viral hook</button>
+  <button onclick="fixIG()">IG FIX</button>
+  <button onclick="autoHook()">VIRAL HOOK</button>
 </div>
 
 <div id="out"></div>
@@ -111,68 +107,57 @@ button{
 
 const styles = {
   Bold:{a:"𝗮",b:"𝗯",c:"𝗰",d:"𝗱",e:"𝗲",f:"𝗳",g:"𝗴",h:"𝗵",i:"𝗶",j:"𝗷",k:"𝗸",l:"𝗹",m:"𝗺",n:"𝗻",o:"𝗼",p:"𝗽",q:"𝗾",r:"𝗿",s:"𝘀",t:"𝘁",u:"𝘂",v:"𝘃",w:"𝘄",x:"𝘅",y:"𝘆",z:"𝘇"},
-  Italic:{a:"𝘢",b:"𝘣",c:"𝘤",d:"𝘥",e:"𝘦",f:"𝘧",g:"𝘨",h:"𝘩",i:"𝘪",j:"𝘫",k:"𝘬",l:"𝘭",m:"𝘮",n:"𝘯",o:"𝘰",p:"𝘱",q:"𝘲",r:"𝘳",s:"𝘴",t:"𝘵",u:"𝘶",v:"𝘷",w:"𝘸",x:"𝘹",y:"𝘺",z:"𝘻"},
-  Script:{a:"𝓪",b:"𝓫",c:"𝓬",d:"𝓭",e:"𝓮",f:"𝓯",g:"𝓰",h:"𝓱",i:"𝓲",j:"𝓳",k:"𝓴",l:"𝓵",m:"𝓶",n:"𝓷",o:"𝓸",p:"𝓹",q:"𝓺",r:"𝓻",s:"𝓼",t:"𝓽",u:"𝓾",v:"𝓿",w:"𝔀",x:"𝔁",y:"𝔂",z:"𝔃"}
-};
 
-let globalClicks = JSON.parse(localStorage.getItem("clicks")||"{}");
+  Italic:{a:"𝘢",b:"𝘣",c:"𝘤",d:"𝘥",e:"𝘦",f:"𝘧",g:"𝘨",h:"𝘩",i:"𝘪",j:"𝘫",k:"𝘬",l:"𝘭",m:"𝘮",n:"𝘯",o:"𝘰",p:"𝘱",q:"𝘲",r:"𝘳",s:"𝘴",t:"𝘵",u:"𝘶",v:"𝘷",w:"𝘸",x:"𝘹",y:"𝘺",z:"𝘻"},
+
+  Script:{a:"𝓪",b:"𝓫",c:"𝓬",d:"𝓭",e:"𝓮",f:"𝓯",g:"𝓰",h:"𝓱",i:"𝓲",j:"𝓳",k:"𝓴",l:"𝓵",m:"𝓶",n:"𝓷",o:"𝓸",p:"𝓹",q:"𝓺",r:"𝓻",s:"𝓼",t:"𝓽",u:"𝓾",v:"𝓿",w:"𝔀",x:"𝔁",y:"𝔂",z:"𝔃"},
+
+  SmallCaps:{a:"ᴀ",b:"ʙ",c:"ᴄ",d:"ᴅ",e:"ᴇ",f:"ғ",g:"ɢ",h:"ʜ",i:"ɪ",j:"ᴊ",k:"ᴋ",l:"ʟ",m:"ᴍ",n:"ɴ",o:"ᴏ",p:"ᴘ",q:"ǫ",r:"ʀ",s:"s",t:"ᴛ",u:"ᴜ",v:"ᴠ",w:"ᴡ",x:"x",y:"ʏ",z:"ᴢ"},
+
+  Double:{a:"𝕒",b:"𝕓",c:"𝕔",d:"𝕕",e:"𝕖",f:"𝕗",g:"𝕘",h:"𝕙",i:"𝕚",j:"𝕛",k:"𝕜",l:"𝕝",m:"𝕞",n:"𝕟",o:"𝕠",p:"𝕡",q:"𝕢",r:"𝕣",s:"𝕤",t:"𝕥",u:"𝕦",v:"𝕧",w:"𝕨",x:"𝕩",y:"𝕪",z:"𝕫"},
+
+  Glitch:{a:"a̷",b:"b̷",c:"c̷",d:"d̷",e:"e̷",f:"f̷",g:"g̷",h:"h̷",i:"i̷",j:"j̷",k:"k̷",l:"l̷",m:"m̷",n:"n̷",o:"o̷",p:"p̷",q:"q̷",r:"r̷",s:"s̷",t:"t̷",u:"u̷",v:"v̷",w:"w̷",x:"x̷",y:"y̷",z:"z̷"}
+};
 
 function convert(text,map){
   return text.split('').map(c=>map[c.toLowerCase()]||c).join('');
 }
 
-function viralScore(text){
-  return Math.min(100, text.length * 2);
-}
-
-function generate(){
+function render(){
   const input=document.getElementById("input").value;
+  const search=document.getElementById("search").value.toLowerCase();
   const out=document.getElementById("out");
+
   out.innerHTML="";
 
-  Object.entries(styles).forEach(([name,map])=>{
+  Object.entries(styles)
+    .filter(([name])=>name.toLowerCase().includes(search))
+    .forEach(([name,map])=>{
 
-    const text=convert(input,map);
-    const score=viralScore(text);
+      const text=convert(input,map);
 
-    const card=document.createElement("div");
-    card.className="card";
+      const card=document.createElement("div");
+      card.className="card";
 
-    const clicks = globalClicks[name]||0;
+      card.innerHTML=`
+        <div class="row">
+          <b>${name}</b>
+          <span class="small">1 klik copy</span>
+        </div>
 
-    card.innerHTML=`
-      <div class="row">
-        <b>${name}</b>
-        <span class="badge">${score}% VIRAL</span>
-      </div>
+        <div style="margin:8px 0">${text}</div>
 
-      <div style="margin:8px 0">${text}</div>
+        <button>Kopiuj</button>
+      `;
 
-      <div class="stats">
-        🔥 kopiowania: ${clicks}
-      </div>
+      const btn=card.querySelector("button");
 
-      <button>Kopiuj + Share</button>
-    `;
+      btn.onclick=()=>{
+        navigator.clipboard.writeText(text);
+        toast("Skopiowano ✔");
+      };
 
-    const btn=card.querySelector("button");
-
-    btn.onclick=()=>{
-      navigator.clipboard.writeText(text);
-
-      globalClicks[name]=(globalClicks[name]||0)+1;
-      localStorage.setItem("clicks",JSON.stringify(globalClicks));
-
-      const shareURL = window.location.href + "?text=" + encodeURIComponent(text);
-
-      toast("Skopiowano + link 🔗");
-
-      setTimeout(()=>{
-        navigator.clipboard.writeText(shareURL);
-      },300);
-    };
-
-    out.appendChild(card);
+      out.appendChild(card);
   });
 }
 
@@ -188,12 +173,12 @@ function autoHook(){
   const hooks=[
     "TO MUSISZ ZOBACZYĆ 🔥",
     "99% ludzi tego nie wie 👀",
-    "Ten trik robi VIRAL ⚡",
+    "Ten trik = VIRAL ⚡",
     "Zapisz zanim zniknie 🚀"
   ];
 
   t.value = hooks[Math.floor(Math.random()*hooks.length)] + "\n\n" + t.value;
-  toast("Viral hook added");
+  toast("Viral hook dodany");
 }
 
 function toast(msg){
@@ -204,7 +189,7 @@ function toast(msg){
   setTimeout(()=>el.remove(),1500);
 }
 
-generate();
+render();
 
 </script>
 
