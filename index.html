@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unicode Styler PRO MAX v4</title>
+<title>Unicode Styler PRO MAX v5</title>
 
 <style>
 body{
@@ -37,6 +37,10 @@ button{
   margin:5px;
 }
 
+button:active{
+  transform: scale(0.97);
+}
+
 .card{
   background:#111827;
   padding:12px;
@@ -58,7 +62,7 @@ button{
 
 <body>
 
-<h2>🚀 Unicode Styler PRO MAX v4</h2>
+<h2>🚀 Unicode Styler PRO MAX v5</h2>
 
 <textarea id="input" placeholder="Wpisz tekst..."></textarea>
 
@@ -101,8 +105,15 @@ function generate(){
     box.innerHTML=`
       <div class="name">${name}</div>
       <div class="text">${text}</div>
-      <button onclick="navigator.clipboard.writeText(\`${text}\`)">Kopiuj</button>
+      <button>Kopiuj</button>
     `;
+
+    const btn=box.querySelector("button");
+    btn.onclick=()=>{
+      navigator.clipboard.writeText(text);
+      btn.innerText="Skopiowano ✔";
+      setTimeout(()=>btn.innerText="Kopiuj",1000);
+    };
 
     out.appendChild(box);
   });
@@ -110,12 +121,13 @@ function generate(){
 
 function fixIG(){
   const t=document.getElementById("input");
-  t.value=t.value.replace(/\n/g,"\u2063");
+  t.value = t.value.replace(/\n/g,"\u2063");
+  alert("IG naprawione ✔");
 }
 
 function autoDesc(){
   const t=document.getElementById("input");
-  t.value=`🔥 ${t.value}\n✨ viral content\n📈 grow daily\n👇 follow`;
+  t.value = `🔥 ${t.value}\n✨ viral content\n📈 grow daily\n👇 follow`;
 }
 </script>
 
