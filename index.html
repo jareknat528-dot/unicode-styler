@@ -3,69 +3,93 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unicode Styler v14 Product Mode</title>
+<title>Unicode Styler v15 Startup Mode</title>
 
 <style>
 body{
-  font-family: Arial;
+  font-family:Arial;
   background: radial-gradient(circle,#0f172a,#020617);
   color:white;
-  max-width:900px;
-  margin:auto;
+  margin:0;
+  display:flex;
+  justify-content:center;
+}
+
+.app{
+  width:900px;
   padding:20px;
 }
 
-.topbar{
+/* LOGIN */
+.login{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.9);
   display:flex;
-  justify-content:space-between;
   align-items:center;
+  justify-content:center;
 }
 
-.logo{
-  font-weight:bold;
+.loginBox{
+  background:#111827;
+  padding:20px;
+  border-radius:12px;
+  width:300px;
 }
 
-.badge{
-  background:#22c55e;
-  color:black;
-  padding:3px 8px;
-  border-radius:8px;
-  font-size:11px;
-}
-
-.panel{
-  display:flex;
-  gap:10px;
-  margin-top:10px;
-}
-
-input, textarea{
+input{
   width:100%;
+  padding:10px;
+  margin-top:10px;
   border:none;
   border-radius:10px;
-  padding:10px;
-  font-size:14px;
-}
-
-textarea{
-  height:110px;
 }
 
 button{
   background:#22c55e;
   border:none;
-  padding:8px 12px;
+  padding:10px;
   border-radius:10px;
   cursor:pointer;
   font-weight:bold;
-  font-size:12px;
+  margin-top:10px;
+  width:100%;
+}
+
+/* TOP */
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.badge{
+  background:#22c55e;
+  color:black;
+  padding:4px 8px;
+  border-radius:8px;
+  font-size:11px;
+}
+
+/* DASHBOARD */
+.panel{
+  margin-top:10px;
+  display:flex;
+  gap:10px;
+}
+
+textarea{
+  width:100%;
+  height:100px;
+  border:none;
+  border-radius:10px;
+  padding:10px;
 }
 
 .grid{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:10px;
   margin-top:15px;
+  display:grid;
+  gap:10px;
 }
 
 .card{
@@ -73,32 +97,31 @@ button{
   padding:12px;
   border-radius:12px;
   transition:0.2s;
-  cursor:pointer;
-  border:1px solid transparent;
 }
 
-.card.active{
-  border:1px solid #22c55e;
-  box-shadow:0 0 15px rgba(34,197,94,0.2);
+.card:hover{
+  transform:translateY(-2px);
 }
 
-.row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+.locked{
+  opacity:0.5;
+  position:relative;
+}
+
+.locked::after{
+  content:"🔒 PRO";
+  position:absolute;
+  top:10px;
+  right:10px;
+  font-size:11px;
+  background:red;
+  padding:2px 6px;
+  border-radius:6px;
 }
 
 .small{
   font-size:11px;
   opacity:0.7;
-}
-
-.stats{
-  display:flex;
-  justify-content:space-between;
-  margin-top:10px;
-  font-size:11px;
-  opacity:0.8;
 }
 
 .toast{
@@ -109,35 +132,43 @@ button{
   background:#22c55e;
   color:black;
   padding:10px 20px;
-  border-radius:12px;
-  font-weight:bold;
+  border-radius:10px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="topbar">
-  <div class="logo">🚀 Unicode Styler v14</div>
-  <div class="badge">FREE PRODUCT MODE</div>
+<!-- LOGIN -->
+<div class="login" id="login">
+  <div class="loginBox">
+    <h3>🚀 Unicode Styler v15</h3>
+    <input id="user" placeholder="username">
+    <input id="pass" placeholder="password" type="password">
+    <button onclick="login()">Login (FREE)</button>
+    <div class="small">No backend • demo mode</div>
+  </div>
 </div>
 
-<input id="search" placeholder="🔎 search style..." oninput="render()">
+<div class="app" id="app" style="display:none">
 
-<textarea id="input" placeholder="Wpisz tekst..."></textarea>
+  <div class="top">
+    <h3>🚀 Startup Dashboard</h3>
+    <div class="badge">FREE SaaS MODE</div>
+  </div>
 
-<div class="panel">
-  <button onclick="fixIG()">IG FIX</button>
-  <button onclick="hook()">VIRAL HOOK</button>
-  <button onclick="exportText()">EXPORT</button>
+  <textarea id="input" placeholder="Wpisz tekst..."></textarea>
+
+  <div class="panel">
+    <button onclick="fixIG()">IG FIX</button>
+    <button onclick="hook()">VIRAL HOOK</button>
+    <button onclick="exportText()">EXPORT</button>
+    <button onclick="upgrade()">UPGRADE PRO</button>
+  </div>
+
+  <div class="grid" id="out"></div>
+
 </div>
-
-<div class="stats">
-  <div>🔥 Viral Score: <span id="score">0%</span></div>
-  <div>⚡ Mode: FREE</div>
-</div>
-
-<div id="out" class="grid"></div>
 
 <script>
 
@@ -148,100 +179,91 @@ const styles={
   Glitch:{a:"a̷",b:"b̷",c:"c̷",d:"d̷",e:"e̷",f:"f̷",g:"g̷",h:"h̷",i:"i̷",j:"j̷",k:"k̷",l:"l̷",m:"m̷",n:"n̷",o:"o̷",p:"p̷",q:"q̷",r:"r̷",s:"s̷",t:"t̷",u:"u̷",v:"v̷",w:"w̷",x:"x̷",y:"y̷",z:"z̷"}
 };
 
-let active=null;
+let pro=false;
 
-function convert(text,map){
-  return text.split('').map(c=>map[c.toLowerCase()]||c).join('');
+function convert(t,m){
+  return t.split('').map(c=>m[c.toLowerCase()]||c).join('');
 }
 
+/* LOGIN */
+function login(){
+  document.getElementById("login").style.display="none";
+  document.getElementById("app").style.display="block";
+  toast("Welcome 👋");
+  render();
+}
+
+/* RENDER */
 function render(){
   const input=document.getElementById("input").value;
-  const search=document.getElementById("search").value.toLowerCase();
   const out=document.getElementById("out");
-
   out.innerHTML="";
 
-  let count=0;
-
-  Object.entries(styles)
-  .filter(([n])=>n.toLowerCase().includes(search))
-  .forEach(([name,map])=>{
+  Object.entries(styles).forEach(([name,map])=>{
 
     const text=convert(input,map);
 
     const card=document.createElement("div");
     card.className="card";
 
+    if(!pro && name==="Glitch"){
+      card.classList.add("locked");
+    }
+
     card.innerHTML=`
-      <div class="row">
-        <b>${name}</b>
-        <span class="small">FREE TOOL</span>
-      </div>
+      <b>${name}</b>
       <div style="margin:8px 0">${text}</div>
-      <button>Kopiuj</button>
+      <button>Copy</button>
     `;
 
-    card.onclick=()=>{
-      if(active) active.classList.remove("active");
-      card.classList.add("active");
-      active=card;
-    };
-
-    const btn=card.querySelector("button");
-    btn.onclick=(e)=>{
-      e.stopPropagation();
+    card.querySelector("button").onclick=()=>{
+      if(!pro && name==="Glitch"){
+        toast("PRO feature 🔒");
+        return;
+      }
       navigator.clipboard.writeText(text);
       toast("Copied ✔");
-      updateScore();
     };
 
     out.appendChild(card);
-    count++;
   });
-
-  document.getElementById("score").innerText=Math.min(100,count*10)+"%";
 }
 
+/* IG FIX */
 function fixIG(){
   const t=document.getElementById("input");
   t.value=t.value.replace(/\n/g,"\u2063");
   toast("IG FIX ✔");
 }
 
+/* VIRAL HOOK */
 function hook(){
   const t=document.getElementById("input");
-
-  const h=[
-    "🚀 VIRAL MODE ON",
-    "⚡ 99% don't know this",
-    "🔥 Boost your reach",
-    "👀 Watch this till end"
-  ];
-
-  t.value=h[Math.floor(Math.random()*h.length)]+"\n\n"+t.value;
+  t.value="🚀 VIRAL MODE ON\n\n"+t.value;
   toast("Hook added ✔");
 }
 
+/* EXPORT */
 function exportText(){
   navigator.clipboard.writeText(document.getElementById("input").value);
   toast("Exported ✔");
 }
 
-function updateScore(){
-  let s=document.getElementById("score");
-  let val=parseInt(s.innerText)||0;
-  s.innerText=Math.min(100,val+5)+"%";
+/* UPGRADE FAKE */
+function upgrade(){
+  pro=true;
+  toast("PRO unlocked (demo) 🔥");
+  render();
 }
 
-function toast(msg){
+/* TOAST */
+function toast(m){
   const el=document.createElement("div");
   el.className="toast";
-  el.innerText=msg;
+  el.innerText=m;
   document.body.appendChild(el);
   setTimeout(()=>el.remove(),1200);
 }
-
-render();
 
 </script>
 
