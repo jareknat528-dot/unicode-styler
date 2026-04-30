@@ -7,70 +7,101 @@
 
 <style>
 body{
-  font-family: Arial, sans-serif;
+  font-family: 'Inter', Arial, sans-serif;
   background: radial-gradient(circle at top,#1e293b,#0f172a);
   color:white;
   max-width:900px;
   margin:auto;
   padding:20px;
+  min-height: 100vh;
 }
 
-h1{margin-bottom:5px}
-.sub{opacity:0.7;margin-bottom:15px}
+h1{margin-bottom:5px; letter-spacing: -1px;}
+.sub{opacity:0.7; margin-bottom:15px; font-size: 14px;}
 
 textarea{
   width:100%;
   height:120px;
-  padding:12px;
+  padding:15px;
   border-radius:12px;
-  border:none;
+  border: 2px solid #334155;
+  background: #1e293b;
+  color: white;
   font-size:16px;
   margin-bottom:10px;
+  box-sizing: border-box;
+  transition: border 0.3s;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #22c55e;
 }
 
 .buttons{
   display:flex;
   flex-wrap:wrap;
-  gap:8px;
-  margin-bottom:15px;
+  gap:10px;
+  margin-bottom:20px;
 }
 
 button{
   background:#22c55e;
+  color: white;
   border:none;
-  padding:10px 14px;
+  padding:12px 18px;
   border-radius:10px;
   cursor:pointer;
   font-weight:bold;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-button:hover{transform:scale(1.05)}
+button:hover{transform:scale(1.05); filter: brightness(1.1);}
+button:active{transform:scale(0.95);}
 
 .preview{
-  background:#0b1220;
-  padding:10px;
+  background: rgba(11, 18, 32, 0.5);
+  padding:15px;
   border-radius:12px;
-  margin-bottom:10px;
+  margin-bottom:15px;
   white-space:pre-wrap;
+  border-left: 4px solid #22c55e;
+  font-style: italic;
 }
 
 .card{
   background:#111827;
-  padding:12px;
+  padding:15px;
   border-radius:12px;
   margin-top:10px;
   display:flex;
   justify-content:space-between;
   align-items:center;
+  border: 1px solid #1f2937;
 }
 
-.name{font-size:12px;opacity:0.7}
-.text{font-size:16px}
+.name{font-size:11px; opacity:0.5; text-transform: uppercase; letter-spacing: 1px;}
+.text{font-size:18px; margin-top: 5px;}
 
 .history{
-  margin-top:10px;
-  font-size:12px;
-  opacity:0.6;
+  margin-top:25px;
+  padding: 15px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  font-size:13px;
+  opacity:0.8;
+}
+
+footer {
+  margin-top:40px; 
+  font-size:14px; 
+  opacity:0.6; 
+  line-height:1.6;
+  border-top: 1px solid #334155;
+  padding-top: 20px;
 }
 </style>
 </head>
@@ -83,20 +114,19 @@ button:hover{transform:scale(1.05)}
 <textarea id="input" placeholder="Wpisz tekst..." oninput="livePreview()"></textarea>
 
 <div class="buttons">
-<button onclick="generate()">Generuj</button>
-<button onclick="fixIG()">Napraw IG</button>
-<button onclick="autoDesc()">🤖 Auto opis</button>
+<button onclick="generate()">Generuj style</button>
+<button id="btn-fix" onclick="fixIG()">Napraw IG</button>
+<button id="btn-auto" onclick="autoDesc()">🤖 Auto opis</button>
 <button onclick="exportText()">💾 Eksport</button>
 </div>
 
-<div class="preview" id="preview">Live preview...</div>
+<div class="preview" id="preview">Podgląd na żywo...</div>
 
 <div id="out"></div>
 
-<div class="history" id="history"></div>
+<div class="history" id="history">Historia pojawi się tutaj...</div>
 
 <script>
-
 const styles={
  Bold:{a:"𝗮",b:"𝗯",c:"𝗰",d:"𝗱",e:"𝗲",f:"𝗳",g:"𝗴",h:"𝗵",i:"𝗶",j:"𝗷",k:"𝗸",l:"𝗹",m:"𝗺",n:"𝗻",o:"𝗼",p:"𝗽",q:"𝗾",r:"𝗿",s:"𝘀",t:"𝘁",u:"𝘂",v:"𝘃",w:"𝘄",x:"𝘅",y:"𝘆",z:"𝘇"},
  Italic:{a:"𝘢",b:"𝘣",c:"𝘤",d:"𝘥",e:"𝘦",f:"𝘧",g:"𝘨",h:"𝘩",i:"𝘪",j:"𝘫",k:"𝘬",l:"𝘭",m:"𝘮",n:"𝘯",o:"𝘰",p:"𝘱",q:"𝘲",r:"𝘳",s:"𝘴",t:"𝘵",u:"𝘶",v:"𝘷",w:"𝘸",x:"𝘹",y:"𝘺",z:"𝘻"},
@@ -107,76 +137,90 @@ const styles={
 };
 
 function convert(t,m){
- return t.split('').map(c=>m[c.toLowerCase()]||c).join('');
+ return t.split('').map(c=>{
+   const lower = c.toLowerCase();
+   return m[lower] ? (c === c.toUpperCase() ? m[lower].toUpperCase() : m[lower]) : c;
+ }).join('');
 }
 
 function livePreview(){
- document.getElementById("preview").innerText =
- document.getElementById("input").value || "Live preview...";
+ document.getElementById("preview").innerText = document.getElementById("input").value || "Podgląd na żywo...";
 }
 
 function generate(){
  const input=document.getElementById("input").value;
+ if(!input) return;
  const out=document.getElementById("out");
  out.innerHTML="";
 
  Object.entries(styles).forEach(([name,map])=>{
   const text=convert(input,map);
-
   const div=document.createElement("div");
   div.className="card";
-
-  div.innerHTML=`
-   <div>
-    <div class="name">${name}</div>
-    <div class="text">${text}</div>
-   </div>
-  `;
-
+  div.innerHTML=`<div><div class="name">${name}</div><div class="text">${text}</div></div>`;
   const btn=document.createElement("button");
   btn.innerText="Kopiuj";
   btn.onclick=()=>{
     navigator.clipboard.writeText(text);
     saveHistory(text);
-    btn.innerText="OK";
-    setTimeout(()=>btn.innerText="Kopiuj",1000);
+    btn.innerText="OK! ✅";
+    btn.style.background = "#3b82f6";
+    setTimeout(()=>{btn.innerText="Kopiuj"; btn.style.background="";}, 1000);
   };
-
   div.appendChild(btn);
   out.appendChild(div);
  });
 }
 
 function fixIG(){
- document.getElementById("input").value =
- document.getElementById("input").value.replace(/\n/g,"\u2063");
+  const input = document.getElementById("input");
+  if(!input.value) return;
+  
+  // Naprawa: dodanie niewidzialnego znaku przed każdym enterem
+  input.value = input.value.replace(/\n/g, "\u2063\n");
+  navigator.clipboard.writeText(input.value);
+  
+  const btn = document.getElementById("btn-fix");
+  const oldText = btn.innerText;
+  btn.innerText = "NAPRAWIONO I SKOPIOWANO! ✅";
+  btn.style.background = "#10b981";
+  
+  setTimeout(() => {
+    btn.innerText = oldText;
+    btn.style.background = "";
+  }, 2500);
 }
 
 function autoDesc(){
  const input=document.getElementById("input");
+ let base=input.value.split("🔥")[0].split("✨")[0].trim();
+ if(!base) base = "Twój niesamowity post";
 
- let base=input.value.split("✨")[0].trim();
- if(!base) return;
-
- input.value =
-`🔥 ${base}
-
-✨ viral content
-📈 grow daily
-👇 follow for more`;
+ input.value = `🔥 ${base}\n\n✨ viral content\n📈 grow daily\n👇 follow for more`;
+ livePreview();
+ 
+ const btn = document.getElementById("btn-auto");
+ btn.innerText = "WYGENEROWANO! 🤖";
+ btn.style.background = "#8b5cf6";
+ setTimeout(() => {
+    btn.innerText = "🤖 Auto opis";
+    btn.style.background = "";
+ }, 2000);
 }
 
 function exportText(){
  const content=document.getElementById("out").innerText;
+ if(!content) return;
  const blob=new Blob([content],{type:"text/plain"});
  const a=document.createElement("a");
  a.href=URL.createObjectURL(blob);
- a.download="unicode-pro-max.txt";
+ a.download="unicode-styler-export.txt";
  a.click();
 }
 
 function saveHistory(text){
  let h=JSON.parse(localStorage.getItem("history")||"[]");
+ if(h[0] === text) return;
  h.unshift(text);
  h=h.slice(0,5);
  localStorage.setItem("history",JSON.stringify(h));
@@ -185,16 +229,16 @@ function saveHistory(text){
 
 function renderHistory(){
  let h=JSON.parse(localStorage.getItem("history")||"[]");
- document.getElementById("history").innerText =
- "Historia:\n" + h.join("\n---\n");
+ document.getElementById("history").innerText = h.length > 0 ? "Ostatnio skopiowane:\n" + h.join("\n---\n") : "Historia jest pusta";
 }
 
 renderHistory();
-
 </script>
-<div style="margin-top:30px; font-size:14px; opacity:0.7; line-height:1.5">
-<b>Unicode Styler</b> to darmowy generator czcionek online do Instagrama, TikToka i Facebooka.  
-Tworzy style tekstu takie jak bold, italic, script i glitch, które pomagają wyróżnić posty i zwiększyć zasięgi w social media.
-</div>
+
+<footer>
+  <b>Unicode Styler PRO</b> to darmowe narzędzie SEO dla twórców. 
+  Generuj pogrubiony tekst na Facebooka, kursywę na Instagram i naprawiaj odstępy w opisach postów, aby zwiększyć zaangażowanie i zasięgi.
+</footer>
+
 </body>
 </html>
