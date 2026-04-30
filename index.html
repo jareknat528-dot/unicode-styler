@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unicode Styler PRO MAX v6</title>
+<title>Unicode Styler PRO MAX v7</title>
 
 <style>
 body{
@@ -25,7 +25,6 @@ textarea{
   padding:10px;
   font-size:16px;
   margin-bottom:10px;
-  outline:none;
 }
 
 button{
@@ -39,9 +38,7 @@ button{
   transition:0.2s;
 }
 
-button:active{
-  transform:scale(0.96);
-}
+button:active{transform:scale(0.97)}
 
 .card{
   background:#111827;
@@ -76,7 +73,7 @@ button:active{
 
 <body>
 
-<h2>🚀 Unicode Styler PRO MAX v6</h2>
+<h2>🚀 Unicode Styler PRO MAX v7</h2>
 
 <textarea id="input" placeholder="Wpisz tekst..."></textarea>
 
@@ -84,6 +81,7 @@ button:active{
   <button onclick="generate()">Generuj</button>
   <button onclick="fixIG()">Napraw IG</button>
   <button onclick="autoDesc()">🤖 Auto opis</button>
+  <button onclick="exportAll()">💾 Eksport</button>
 </div>
 
 <div id="out"></div>
@@ -117,24 +115,24 @@ function generate(){
     const card=document.createElement("div");
     card.className="card";
 
-    const btnId = Math.random().toString(36).slice(2);
-
     card.innerHTML=`
       <div class="name">${name}</div>
       <div class="text">${text}</div>
-      <button id="${btnId}">Kopiuj</button>
+      <button onclick="copyText(this,'${encodeURIComponent(text)}')">Kopiuj</button>
     `;
-
-    const btn = card.querySelector("button");
-    btn.onclick=()=>{
-      navigator.clipboard.writeText(text);
-      btn.innerText="Skopiowano ✔";
-      setTimeout(()=>btn.innerText="Kopiuj",1000);
-      toast("Skopiowano");
-    };
 
     out.appendChild(card);
   });
+}
+
+function copyText(btn,text){
+  const decoded = decodeURIComponent(text);
+  navigator.clipboard.writeText(decoded);
+
+  btn.innerText="Skopiowano ✔";
+  setTimeout(()=>btn.innerText="Kopiuj",1000);
+
+  toast("Skopiowano");
 }
 
 function fixIG(){
@@ -147,6 +145,18 @@ function autoDesc(){
   const t=document.getElementById("input");
   t.value = `🔥 ${t.value}\n✨ viral content\n📈 grow daily\n👇 follow`;
   toast("Opis gotowy 🚀");
+}
+
+function exportAll(){
+  const out=document.getElementById("out").innerText;
+
+  const blob = new Blob([out], {type:"text/plain"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="unicode-styler-export.txt";
+  a.click();
+
+  toast("Eksport pobrany 💾");
 }
 
 function toast(msg){
