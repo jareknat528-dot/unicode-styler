@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unicode Styler v13 SaaS</title>
+<title>Unicode Styler v14 Product Mode</title>
 
 <style>
 body{
@@ -19,7 +19,6 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:10px;
 }
 
 .logo{
@@ -34,16 +33,23 @@ body{
   font-size:11px;
 }
 
+.panel{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+
 input, textarea{
   width:100%;
   border:none;
   border-radius:10px;
   padding:10px;
-  margin-top:10px;
   font-size:14px;
 }
 
-textarea{height:110px;}
+textarea{
+  height:110px;
+}
 
 button{
   background:#22c55e;
@@ -52,20 +58,28 @@ button{
   border-radius:10px;
   cursor:pointer;
   font-weight:bold;
-  margin:4px;
   font-size:12px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+  margin-top:15px;
 }
 
 .card{
   background:#111827;
   padding:12px;
   border-radius:12px;
-  margin-top:10px;
   transition:0.2s;
+  cursor:pointer;
+  border:1px solid transparent;
 }
 
-.card:hover{
-  transform:scale(1.01);
+.card.active{
+  border:1px solid #22c55e;
+  box-shadow:0 0 15px rgba(34,197,94,0.2);
 }
 
 .row{
@@ -79,6 +93,14 @@ button{
   opacity:0.7;
 }
 
+.stats{
+  display:flex;
+  justify-content:space-between;
+  margin-top:10px;
+  font-size:11px;
+  opacity:0.8;
+}
+
 .toast{
   position:fixed;
   bottom:20px;
@@ -90,48 +112,43 @@ button{
   border-radius:12px;
   font-weight:bold;
 }
-
-.loader{
-  display:none;
-  margin:10px 0;
-  font-size:12px;
-  opacity:0.8;
-}
 </style>
 </head>
 
 <body>
 
 <div class="topbar">
-  <div class="logo">🚀 Unicode Styler v13</div>
-  <div class="badge">SaaS MODE</div>
+  <div class="logo">🚀 Unicode Styler v14</div>
+  <div class="badge">FREE PRODUCT MODE</div>
 </div>
 
 <input id="search" placeholder="🔎 search style..." oninput="render()">
 
 <textarea id="input" placeholder="Wpisz tekst..."></textarea>
 
-<div class="loader" id="loader">⚡ AI processing styles...</div>
-
-<div>
+<div class="panel">
   <button onclick="fixIG()">IG FIX</button>
-  <button onclick="autoHook()">VIRAL HOOK</button>
-  <button onclick="exportData()">EXPORT</button>
+  <button onclick="hook()">VIRAL HOOK</button>
+  <button onclick="exportText()">EXPORT</button>
 </div>
 
-<div id="out"></div>
+<div class="stats">
+  <div>🔥 Viral Score: <span id="score">0%</span></div>
+  <div>⚡ Mode: FREE</div>
+</div>
+
+<div id="out" class="grid"></div>
 
 <script>
 
-const styles = {
+const styles={
   Bold:{a:"𝗮",b:"𝗯",c:"𝗰",d:"𝗱",e:"𝗲",f:"𝗳",g:"𝗴",h:"𝗵",i:"𝗶",j:"𝗷",k:"𝗸",l:"𝗹",m:"𝗺",n:"𝗻",o:"𝗼",p:"𝗽",q:"𝗾",r:"𝗿",s:"𝘀",t:"𝘁",u:"𝘂",v:"𝘃",w:"𝘄",x:"𝘅",y:"𝘆",z:"𝘇"},
-
   Italic:{a:"𝘢",b:"𝘣",c:"𝘤",d:"𝘥",e:"𝘦",f:"𝘧",g:"𝘨",h:"𝘩",i:"𝘪",j:"𝘫",k:"𝘬",l:"𝘭",m:"𝘮",n:"𝘯",o:"𝘰",p:"𝘱",q:"𝘲",r:"𝘳",s:"𝘴",t:"𝘵",u:"𝘶",v:"𝘷",w:"𝘸",x:"𝘹",y:"𝘺",z:"𝘻"},
-
   Script:{a:"𝓪",b:"𝓫",c:"𝓬",d:"𝓭",e:"𝓮",f:"𝓯",g:"𝓰",h:"𝓱",i:"𝓲",j:"𝓳",k:"𝓴",l:"𝓵",m:"𝓶",n:"𝓷",o:"𝓸",p:"𝓹",q:"𝓺",r:"𝓻",s:"𝓼",t:"𝓽",u:"𝓾",v:"𝓿",w:"𝔀",x:"𝔁",y:"𝔂",z:"𝔃"},
-
   Glitch:{a:"a̷",b:"b̷",c:"c̷",d:"d̷",e:"e̷",f:"f̷",g:"g̷",h:"h̷",i:"i̷",j:"j̷",k:"k̷",l:"l̷",m:"m̷",n:"n̷",o:"o̷",p:"p̷",q:"q̷",r:"r̷",s:"s̷",t:"t̷",u:"u̷",v:"v̷",w:"w̷",x:"x̷",y:"y̷",z:"z̷"}
 };
+
+let active=null;
 
 function convert(text,map){
   return text.split('').map(c=>map[c.toLowerCase()]||c).join('');
@@ -142,71 +159,78 @@ function render(){
   const search=document.getElementById("search").value.toLowerCase();
   const out=document.getElementById("out");
 
-  const loader=document.getElementById("loader");
-  loader.style.display="block";
+  out.innerHTML="";
 
-  setTimeout(()=>{
-    out.innerHTML="";
+  let count=0;
 
-    Object.entries(styles)
-      .filter(([n])=>n.toLowerCase().includes(search))
-      .forEach(([name,map])=>{
+  Object.entries(styles)
+  .filter(([n])=>n.toLowerCase().includes(search))
+  .forEach(([name,map])=>{
 
-        const text=convert(input,map);
+    const text=convert(input,map);
 
-        const card=document.createElement("div");
-        card.className="card";
+    const card=document.createElement("div");
+    card.className="card";
 
-        card.innerHTML=`
-          <div class="row">
-            <b>${name}</b>
-            <span class="small">LIVE SaaS</span>
-          </div>
+    card.innerHTML=`
+      <div class="row">
+        <b>${name}</b>
+        <span class="small">FREE TOOL</span>
+      </div>
+      <div style="margin:8px 0">${text}</div>
+      <button>Kopiuj</button>
+    `;
 
-          <div style="margin:8px 0">${text}</div>
+    card.onclick=()=>{
+      if(active) active.classList.remove("active");
+      card.classList.add("active");
+      active=card;
+    };
 
-          <button>Kopiuj</button>
-        `;
+    const btn=card.querySelector("button");
+    btn.onclick=(e)=>{
+      e.stopPropagation();
+      navigator.clipboard.writeText(text);
+      toast("Copied ✔");
+      updateScore();
+    };
 
-        const btn=card.querySelector("button");
+    out.appendChild(card);
+    count++;
+  });
 
-        btn.onclick=()=>{
-          navigator.clipboard.writeText(text);
-          toast("Copied ✔");
-        };
-
-        out.appendChild(card);
-    });
-
-    loader.style.display="none";
-
-  },300);
+  document.getElementById("score").innerText=Math.min(100,count*10)+"%";
 }
 
 function fixIG(){
   const t=document.getElementById("input");
   t.value=t.value.replace(/\n/g,"\u2063");
-  toast("IG FIXED ✔");
+  toast("IG FIX ✔");
 }
 
-function autoHook(){
+function hook(){
   const t=document.getElementById("input");
 
-  const hooks=[
-    "🚀 VIRAL CONTENT ALERT",
-    "👀 99% don’t know this",
-    "⚡ Boost your reach now",
-    "🔥 Save this before it disappears"
+  const h=[
+    "🚀 VIRAL MODE ON",
+    "⚡ 99% don't know this",
+    "🔥 Boost your reach",
+    "👀 Watch this till end"
   ];
 
-  t.value = hooks[Math.floor(Math.random()*hooks.length)] + "\n\n" + t.value;
+  t.value=h[Math.floor(Math.random()*h.length)]+"\n\n"+t.value;
   toast("Hook added ✔");
 }
 
-function exportData(){
-  const text=document.getElementById("input").value;
-  navigator.clipboard.writeText(text);
-  toast("Exported to clipboard ✔");
+function exportText(){
+  navigator.clipboard.writeText(document.getElementById("input").value);
+  toast("Exported ✔");
+}
+
+function updateScore(){
+  let s=document.getElementById("score");
+  let val=parseInt(s.innerText)||0;
+  s.innerText=Math.min(100,val+5)+"%";
 }
 
 function toast(msg){
@@ -214,7 +238,7 @@ function toast(msg){
   el.className="toast";
   el.innerText=msg;
   document.body.appendChild(el);
-  setTimeout(()=>el.remove(),1400);
+  setTimeout(()=>el.remove(),1200);
 }
 
 render();
