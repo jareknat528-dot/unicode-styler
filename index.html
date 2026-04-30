@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unicode Styler PRO MAX v12.2 AI UX</title>
+<title>Unicode Styler v13 SaaS</title>
 
 <style>
 body{
@@ -15,14 +15,17 @@ body{
   padding:20px;
 }
 
-.nav{
+.topbar{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:10px 0;
+  margin-bottom:10px;
 }
 
-.logo{font-weight:bold}
+.logo{
+  font-weight:bold;
+}
+
 .badge{
   background:#22c55e;
   color:black;
@@ -40,9 +43,7 @@ input, textarea{
   font-size:14px;
 }
 
-textarea{
-  height:110px;
-}
+textarea{height:110px;}
 
 button{
   background:#22c55e;
@@ -60,6 +61,11 @@ button{
   padding:12px;
   border-radius:12px;
   margin-top:10px;
+  transition:0.2s;
+}
+
+.card:hover{
+  transform:scale(1.01);
 }
 
 .row{
@@ -78,32 +84,39 @@ button{
   bottom:20px;
   left:50%;
   transform:translateX(-50%);
-  background:rgba(34,197,94,0.95);
+  background:#22c55e;
   color:black;
   padding:10px 20px;
   border-radius:12px;
   font-weight:bold;
-  box-shadow:0 0 20px rgba(34,197,94,0.4);
+}
+
+.loader{
+  display:none;
+  margin:10px 0;
+  font-size:12px;
+  opacity:0.8;
 }
 </style>
 </head>
 
 <body>
 
-<div class="nav">
-  <div class="logo">🚀 Unicode Styler v12.2</div>
-  <div class="badge">AI UX MODE</div>
+<div class="topbar">
+  <div class="logo">🚀 Unicode Styler v13</div>
+  <div class="badge">SaaS MODE</div>
 </div>
 
-<input id="search" placeholder="🔎 szukaj stylu..." oninput="render()">
+<input id="search" placeholder="🔎 search style..." oninput="render()">
 
 <textarea id="input" placeholder="Wpisz tekst..."></textarea>
 
-<div id="suggestions" class="small" style="margin-top:6px;opacity:0.8"></div>
+<div class="loader" id="loader">⚡ AI processing styles...</div>
 
 <div>
   <button onclick="fixIG()">IG FIX</button>
   <button onclick="autoHook()">VIRAL HOOK</button>
+  <button onclick="exportData()">EXPORT</button>
 </div>
 
 <div id="out"></div>
@@ -117,10 +130,6 @@ const styles = {
 
   Script:{a:"𝓪",b:"𝓫",c:"𝓬",d:"𝓭",e:"𝓮",f:"𝓯",g:"𝓰",h:"𝓱",i:"𝓲",j:"𝓳",k:"𝓴",l:"𝓵",m:"𝓶",n:"𝓷",o:"𝓸",p:"𝓹",q:"𝓺",r:"𝓻",s:"𝓼",t:"𝓽",u:"𝓾",v:"𝓿",w:"𝔀",x:"𝔁",y:"𝔂",z:"𝔃"},
 
-  SmallCaps:{a:"ᴀ",b:"ʙ",c:"ᴄ",d:"ᴅ",e:"ᴇ",f:"ғ",g:"ɢ",h:"ʜ",i:"ɪ",j:"ᴊ",k:"ᴋ",l:"ʟ",m:"ᴍ",n:"ɴ",o:"ᴏ",p:"ᴘ",q:"ǫ",r:"ʀ",s:"s",t:"ᴛ",u:"ᴜ",v:"ᴠ",w:"ᴡ",x:"x",y:"ʏ",z:"ᴢ"},
-
-  Double:{a:"𝕒",b:"𝕓",c:"𝕔",d:"𝕕",e:"𝕖",f:"𝕗",g:"𝕘",h:"𝕙",i:"𝕚",j:"𝕛",k:"𝕜",l:"𝕝",m:"𝕞",n:"𝕟",o:"𝕠",p:"𝕡",q:"𝕢",r:"𝕣",s:"𝕤",t:"𝕥",u:"𝕦",v:"𝕧",w:"𝕨",x:"𝕩",y:"𝕪",z:"𝕫"},
-
   Glitch:{a:"a̷",b:"b̷",c:"c̷",d:"d̷",e:"e̷",f:"f̷",g:"g̷",h:"h̷",i:"i̷",j:"j̷",k:"k̷",l:"l̷",m:"m̷",n:"n̷",o:"o̷",p:"p̷",q:"q̷",r:"r̷",s:"s̷",t:"t̷",u:"u̷",v:"v̷",w:"w̷",x:"x̷",y:"y̷",z:"z̷"}
 };
 
@@ -132,74 +141,78 @@ function render(){
   const input=document.getElementById("input").value;
   const search=document.getElementById("search").value.toLowerCase();
   const out=document.getElementById("out");
-  const sug=document.getElementById("suggestions");
 
-  sug.innerHTML = "💡 Spróbuj: bold / glitch / script";
+  const loader=document.getElementById("loader");
+  loader.style.display="block";
 
-  out.innerHTML="";
+  setTimeout(()=>{
+    out.innerHTML="";
 
-  Object.entries(styles)
-    .filter(([name])=>name.toLowerCase().includes(search))
-    .forEach(([name,map])=>{
+    Object.entries(styles)
+      .filter(([n])=>n.toLowerCase().includes(search))
+      .forEach(([name,map])=>{
 
-      const text=convert(input,map);
+        const text=convert(input,map);
 
-      const card=document.createElement("div");
-      card.className="card";
+        const card=document.createElement("div");
+        card.className="card";
 
-      card.innerHTML=`
-        <div class="row">
-          <b>${name}</b>
-          <span class="small">AI UX ✔</span>
-        </div>
+        card.innerHTML=`
+          <div class="row">
+            <b>${name}</b>
+            <span class="small">LIVE SaaS</span>
+          </div>
 
-        <div style="margin:8px 0">${text}</div>
+          <div style="margin:8px 0">${text}</div>
 
-        <button>Kopiuj</button>
-      `;
+          <button>Kopiuj</button>
+        `;
 
-      const btn=card.querySelector("button");
+        const btn=card.querySelector("button");
 
-      btn.onclick=()=>{
-        navigator.clipboard.writeText(text);
-        playClick();
-        toast("AI COPY ✔");
-      };
+        btn.onclick=()=>{
+          navigator.clipboard.writeText(text);
+          toast("Copied ✔");
+        };
 
-      out.appendChild(card);
-  });
+        out.appendChild(card);
+    });
+
+    loader.style.display="none";
+
+  },300);
 }
 
 function fixIG(){
   const t=document.getElementById("input");
   t.value=t.value.replace(/\n/g,"\u2063");
-  toast("IG FIX ✔");
+  toast("IG FIXED ✔");
 }
 
 function autoHook(){
   const t=document.getElementById("input");
 
   const hooks=[
-    "TO MUSISZ ZOBACZYĆ 🔥",
-    "99% ludzi tego nie wie 👀",
-    "Ten trik = VIRAL ⚡",
-    "Zapisz zanim zniknie 🚀"
+    "🚀 VIRAL CONTENT ALERT",
+    "👀 99% don’t know this",
+    "⚡ Boost your reach now",
+    "🔥 Save this before it disappears"
   ];
 
   t.value = hooks[Math.floor(Math.random()*hooks.length)] + "\n\n" + t.value;
-  toast("Viral hook ✔");
+  toast("Hook added ✔");
 }
 
-function playClick(){
-  const audio = new Audio("https://www.myinstants.com/media/sounds/click.mp3");
-  audio.volume = 0.2;
-  audio.play();
+function exportData(){
+  const text=document.getElementById("input").value;
+  navigator.clipboard.writeText(text);
+  toast("Exported to clipboard ✔");
 }
 
 function toast(msg){
   const el=document.createElement("div");
   el.className="toast";
-  el.innerText="🤖 " + msg;
+  el.innerText=msg;
   document.body.appendChild(el);
   setTimeout(()=>el.remove(),1400);
 }
