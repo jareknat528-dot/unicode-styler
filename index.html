@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unicode Styler PRO MAX v8 VIRAL</title>
+<title>Unicode Styler PRO MAX v9 APP MODE</title>
 
 <style>
 body{
@@ -15,58 +15,57 @@ body{
   padding:20px;
 }
 
-h2{margin-bottom:10px}
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.search{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  margin:10px 0;
+  font-size:14px;
+}
 
 textarea{
   width:100%;
-  height:120px;
+  height:110px;
   border-radius:12px;
   border:none;
   padding:10px;
   font-size:16px;
-  margin-bottom:10px;
 }
 
 button{
   background:#22c55e;
   border:none;
-  padding:10px 14px;
+  padding:8px 12px;
   border-radius:10px;
   cursor:pointer;
   font-weight:bold;
-  margin:5px;
-  transition:0.2s;
+  margin:4px;
+  font-size:12px;
 }
-
-button:active{transform:scale(0.97)}
 
 .card{
   background:#111827;
   padding:12px;
   border-radius:12px;
   margin-top:10px;
-  position:relative;
 }
 
-.badge{
-  position:absolute;
-  top:10px;
-  right:10px;
-  background:#ef4444;
-  color:white;
-  font-size:10px;
-  padding:3px 8px;
-  border-radius:8px;
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
-.name{
+.small{
   font-size:12px;
   opacity:0.7;
-  margin-bottom:5px;
-}
-
-.text{
-  margin-bottom:8px;
 }
 
 .toast{
@@ -80,26 +79,36 @@ button:active{transform:scale(0.97)}
   border-radius:10px;
   font-weight:bold;
 }
+
+.star{
+  cursor:pointer;
+  font-size:14px;
+}
 </style>
 </head>
 
 <body>
 
-<h2>🚀 Unicode Styler PRO MAX v8 VIRAL MODE</h2>
+<div class="header">
+  <h2>🚀 v9 APP MODE</h2>
+  <div class="small">PRO MAX</div>
+</div>
 
 <textarea id="input" placeholder="Wpisz tekst..."></textarea>
 
+<input class="search" id="search" placeholder="🔎 szukaj stylu..." oninput="render()">
+
 <div>
-  <button onclick="generate()">🔥 Generuj VIRAL</button>
   <button onclick="fixIG()">Napraw IG</button>
-  <button onclick="autoDesc()">🤖 Auto hook</button>
+  <button onclick="autoDesc()">Auto hook</button>
 </div>
 
 <div id="out"></div>
 
 <script>
 
-let copyCount = 0;
+let stats = {};
+let favs = {};
 
 const styles = {
   Bold:{a:"𝗮",b:"𝗯",c:"𝗰",d:"𝗱",e:"𝗲",f:"𝗳",g:"𝗴",h:"𝗵",i:"𝗶",j:"𝗷",k:"𝗸",l:"𝗹",m:"𝗺",n:"𝗻",o:"𝗼",p:"𝗽",q:"𝗾",r:"𝗿",s:"𝘀",t:"𝘁",u:"𝘂",v:"𝘃",w:"𝘄",x:"𝘅",y:"𝘆",z:"𝘇"},
@@ -113,58 +122,69 @@ function convert(text,map){
   return text.split('').map(c=>map[c.toLowerCase()]||c).join('');
 }
 
-function generate(){
+function render(){
   const input=document.getElementById("input").value;
+  const search=document.getElementById("search").value.toLowerCase();
   const out=document.getElementById("out");
+
   out.innerHTML="";
 
-  Object.entries(styles).forEach(([name,map])=>{
-    const text=convert(input,map);
+  Object.entries(styles)
+    .filter(([name])=>name.toLowerCase().includes(search))
+    .forEach(([name,map])=>{
 
-    const card=document.createElement("div");
-    card.className="card";
+      const text=convert(input,map);
+      stats[name]=(stats[name]||0);
 
-    card.innerHTML=`
-      <div class="badge">VIRAL</div>
-      <div class="name">${name}</div>
-      <div class="text">${text}</div>
-      <button>Kopiuj (${copyCount})</button>
-    `;
+      const card=document.createElement("div");
+      card.className="card";
 
-    const btn=card.querySelector("button");
+      const fav = favs[name] ? "⭐" : "☆";
 
-    btn.onclick=()=>{
-      navigator.clipboard.writeText(text);
-      copyCount++;
-      btn.innerText=`Skopiowano ✔ (${copyCount})`;
-      setTimeout(()=>btn.innerText=`Kopiuj (${copyCount})`,1000);
-      toast("🔥 Skopiowano +1 viral");
-    };
+      card.innerHTML=`
+        <div class="row">
+          <div><b>${name}</b> <span class="small">(${stats[name]} kopiowań)</span></div>
+          <div class="star">${fav}</div>
+        </div>
+        <div style="margin:6px 0">${text}</div>
+        <button>Kopiuj</button>
+      `;
 
-    out.appendChild(card);
+      const btn = card.querySelector("button");
+      const star = card.querySelector(".star");
+
+      btn.onclick=()=>{
+        navigator.clipboard.writeText(text);
+        stats[name]++;
+        toast("Skopiowano 🔥");
+        render();
+      };
+
+      star.onclick=()=>{
+        favs[name]=!favs[name];
+        render();
+      };
+
+      out.appendChild(card);
   });
 }
 
 function fixIG(){
   const t=document.getElementById("input");
-  t.value = t.value.replace(/\n/g,"\u2063");
+  t.value=t.value.replace(/\n/g,"\u2063");
   toast("IG FIX ✔");
 }
 
 function autoDesc(){
   const t=document.getElementById("input");
-
-  const hooks = [
-    "TO JEST VIRAL 🔥",
+  const hooks=[
+    "TO MUSISZ ZOBACZYĆ 🔥",
     "99% ludzi tego nie wie 👀",
-    "Prosty trik, który zmienia wszystko ⚡",
+    "Prosty trik = viral ⚡",
     "Zapisz zanim zniknie 🚀"
   ];
-
-  const pick = hooks[Math.floor(Math.random()*hooks.length)];
-
-  t.value = `${pick}\n\n${t.value}\n\n👇 follow po więcej`;
-  toast("🔥 VIRAL HOOK dodany");
+  t.value = hooks[Math.floor(Math.random()*hooks.length)] + "\n\n" + t.value;
+  toast("Viral hook dodany");
 }
 
 function toast(msg){
@@ -174,6 +194,8 @@ function toast(msg){
   document.body.appendChild(el);
   setTimeout(()=>el.remove(),1500);
 }
+
+render();
 
 </script>
 
