@@ -1,104 +1,136 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unicode Styler PRO MAX v2</title>
-    <style>
-        body { font-family: sans-serif; background: #0f172a; color: white; max-width: 700px; margin: auto; padding: 20px; text-align: center; }
-        h1 { color: #22c55e; margin-bottom: 20px; }
-        textarea { width: 100%; height: 120px; padding: 15px; border-radius: 12px; border: 2px solid #334155; background: #1e293b; color: white; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
-        .btn-box { display: flex; gap: 10px; margin-bottom: 20px; }
-        button { flex: 1; padding: 15px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; color: white; background: #22c55e; transition: 0.2s; }
-        button:hover { opacity: 0.8; }
-        #fix-btn { background: #8b5cf6; }
-        #ai-btn { background: #6366f1; }
-        .card { background: #111827; padding: 15px; border-radius: 12px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1f2937; text-align: left; }
-        .name { font-size: 10px; opacity: 0.5; text-transform: uppercase; }
-        .text { font-size: 18px; word-break: break-all; }
-        .copy-btn { background: #3b82f6; width: 80px; padding: 8px; font-size: 12px; }
-        footer { margin-top: 40px; font-size: 12px; opacity: 0.4; line-height: 1.5; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unicode Styler PRO MAX v2 FIX</title>
+
+<style>
+body{
+  font-family: Arial;
+  background: radial-gradient(circle,#0f172a,#020617);
+  color:white;
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+
+textarea{
+  width:100%;
+  height:120px;
+  border-radius:12px;
+  border:none;
+  padding:10px;
+  font-size:16px;
+  margin-bottom:10px;
+}
+
+button{
+  background:#22c55e;
+  border:none;
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
+  margin:5px;
+}
+
+.card{
+  background:#111827;
+  padding:12px;
+  border-radius:12px;
+  margin-top:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.badge{
+  font-size:12px;
+  opacity:0.7;
+}
+
+.text{
+  margin-top:5px;
+}
+</style>
 </head>
+
 <body>
 
-    <h1>🚀 Unicode Styler PRO MAX</h1>
-    <textarea id="mainInput" placeholder="Wpisz tekst tutaj..."></textarea>
+<h2>🚀 Unicode Styler PRO MAX v2 FIX</h2>
 
-    <div class="btn-box">
-        <button onclick="handleGenerate()">1. GENERUJ STYLE</button>
-        <button id="fix-btn" onclick="handleFix()">2. NAPRAW IG</button>
-        <button id="ai-btn" onclick="handleAI()">3. AUTO OPIS 🤖</button>
-    </div>
+<textarea id="input" placeholder="Wpisz tekst..."></textarea>
 
-    <div id="outputContainer"></div>
+<div>
+<button onclick="generate()">Generuj</button>
+<button onclick="fixIG()">Napraw IG</button>
+<button onclick="autoDesc()">🤖 Auto opis</button>
+</div>
 
-    <script>
-        const charMaps = {
-            "Bold": {a:"𝗮",b:"𝗯",c:"𝗰",d:"𝗱",e:"𝗲",f:"𝗳",g:"𝗴",h:"𝗵",i:"𝗶",j:"𝗷",k:"𝗸",l:"𝗹",m:"𝗺",n:"𝗻",o:"𝗼",p:"𝗽",q:"𝗾",r:"𝗿",s:"𝘀",t:"𝘁",u:"𝘂",v:"𝘃",w:"𝘄",x:"𝘅",y:"𝘆",z:"𝘇"},
-            "Italic": {a:"𝘢",b:"𝘣",c:"𝘤",d:"𝘥",e:"𝘦",f:"𝘧",g:"𝘨",h:"𝘩",i:"𝘪",j:"𝘫",k:"𝘬",l:"𝘭",m:"𝘮",n:"𝘯",o:"𝘰",p:"𝘱",q:"𝘲",r:"𝘳",s:"𝘴",t:"𝘵",u:"𝘶",v:"𝘷",w:"𝘸",x:"𝘹",y:"𝘺",z:"𝘻"},
-            "Script": {a:"𝓪",b:"𝓫",c:"𝓬",d:"𝓭",e:"𝓮",f:"𝓯",g:"𝓰",h:"𝓱",i:"𝓲",j:"𝓳",k:"𝓴",l:"𝓵",m:"𝓶",n:"𝓷",o:"𝓸",p:"𝓹",q:"𝓺",r:"𝓻",s:"𝓼",t:"𝓽",u:"𝓾",v:"𝓿",w:"𝔀",x:"𝔁",y:"𝔂",z:"𝔃"},
-            "Glitch": {a:"a̷",b:"b̷",c:"c̷",d:"d̷",e:"e̷",f:"f̷",g:"g̷",h:"h̷",i:"i̷",j:"j̷",k:"k̷",l:"l̷",m:"m̷",n:"n̷",o:"o̷",p:"p̷",q:"q̷",r:"r̷",s:"s̷",t:"t̷",u:"u̷",v:"v̷",w:"w̷",x:"x̷",y:"y̷",z:"z̷"}
-        };
+<div id="out"></div>
 
-        function handleGenerate() {
-            const val = document.getElementById("mainInput").value;
-            const out = document.getElementById("outputContainer");
-            out.innerHTML = "";
-            if(!val) return alert("Wpisz tekst!");
+<script>
 
-            for (const [name, map] of Object.entries(charMaps)) {
-                const converted = val.split('').map(c => {
-                    const l = c.toLowerCase();
-                    const r = map[l] || c;
-                    return c === c.toUpperCase() ? r.toUpperCase() : r;
-                }).join('');
+const styles = {
+  Bold:{a:"𝗮",b:"𝗯",c:"𝗰",d:"𝗱",e:"𝗲",f:"𝗳",g:"𝗴",h:"𝗵",i:"𝗶",j:"𝗷",k:"𝗸",l:"𝗹",m:"𝗺",n:"𝗻",o:"𝗼",p:"𝗽",q:"𝗾",r:"𝗿",s:"𝘀",t:"𝘁",u:"𝘂",v:"𝘃",w:"𝘄",x:"𝘅",y:"𝘆",z:"𝘇"},
+  Italic:{a:"𝘢",b:"𝘣",c:"𝘤",d:"𝘥",e:"𝘦",f:"𝘧",g:"𝘨",h:"𝘩",i:"𝘪",j:"𝘫",k:"𝘬",l:"𝘭",m:"𝘮",n:"𝘯",o:"𝘰",p:"𝘱",q:"𝘲",r:"𝘳",s:"𝘴",t:"𝘵",u:"𝘶",v:"𝘷",w:"𝘸",x:"𝘹",y:"𝘺",z:"𝘻"},
+  Script:{a:"𝓪",b:"𝓫",c:"𝓬",d:"𝓭",e:"𝓮",f:"𝓯",g:"𝓰",h:"𝓱",i:"𝓲",j:"𝓳",k:"𝓴",l:"𝓵",m:"𝓶",n:"𝓷",o:"𝓸",p:"𝓹",q:"𝓺",r:"𝓻",s:"𝓼",t:"𝓽",u:"𝓾",v:"𝓿",w:"𝔀",x:"𝔁",y:"𝔂",z:"𝔃"},
+  SmallCaps:{a:"ᴀ",b:"ʙ",c:"ᴄ",d:"ᴅ",e:"ᴇ",f:"ғ",g:"ɢ",h:"ʜ",i:"ɪ",j:"ᴊ",k:"ᴋ",l:"ʟ",m:"ᴍ",n:"ɴ",o:"ᴏ",p:"ᴘ",q:"ǫ",r:"ʀ",s:"s",t:"ᴛ",u:"ᴜ",v:"ᴠ",w:"ᴡ",x:"x",y:"ʏ",z:"ᴢ"},
+  Glitch:{a:"a̷",b:"b̷",c:"c̷",d:"d̷",e:"e̷",f:"f̷",g:"g̷",h:"h̷",i:"i̷",j:"j̷",k:"k̷",l:"l̷",m:"m̷",n:"n̷",o:"o̷",p:"p̷",q:"q̷",r:"r̷",s:"s̷",t:"t̷",u:"u̷",v:"v̷",w:"w̷",x:"x̷",y:"y̷",z:"z̷"},
+  Double:{a:"𝕒",b:"𝕓",c:"𝕔",d:"𝕕",e:"𝕖",f:"𝕗",g:"𝕘",h:"𝕙",i:"𝕚",j:"𝕛",k:"𝕜",l:"𝕝",m:"𝕞",n:"𝕟",o:"𝕠",p:"𝕡",q:"𝕢",r:"𝕣",s:"𝕤",t:"𝕥",u:"𝕦",v:"𝕧",w:"𝕨",x:"𝕩",y:"𝕪",z:"𝕫"}
+};
 
-                const div = document.createElement("div");
-                div.className = "card";
-                div.innerHTML = `<div><div class="name">${name}</div><div class="text">${converted}</div></div>`;
-                
-                const btn = document.createElement("button");
-                btn.className = "copy-btn";
-                btn.innerText = "Kopiuj";
-                btn.onclick = function() {
-                    navigator.clipboard.writeText(converted);
-                    this.innerText = "OK!";
-                    setTimeout(() => { this.innerText = "Kopiuj"; }, 1000);
-                };
-                div.appendChild(btn);
-                out.appendChild(div);
-            }
-        }
+function convert(text,map){
+  return text.split('').map(c=>map[c.toLowerCase()]||c).join('');
+}
 
-        function handleFix() {
-            const el = document.getElementById("mainInput");
-            if(!el.value) return alert("Wpisz tekst!");
-            const fixed = el.value.split('\n').join('\u2063\n');
-            el.value = fixed;
-            navigator.clipboard.writeText(fixed).then(() => {
-                const btn = document.getElementById("fix-btn");
-                btn.innerText = "SKOPIOWANO! ✅";
-                btn.style.background = "#10b981";
-                alert("Naprawiono i skopiowano!");
-                setTimeout(() => { btn.innerText = "2. NAPRAW IG"; btn.style.background = "#8b5cf6"; }, 2000);
-            });
-        }
+function generate(){
+  const input=document.getElementById("input").value;
+  const out=document.getElementById("out");
+  out.innerHTML="";
 
-        function handleAI() {
-            const el = document.getElementById("mainInput");
-            const val = el.value || "Mój post";
-            el.value = "🔥 " + val + "\n\n✨ viral content\n📈 grow daily\n👇 follow for more";
-            const btn = document.getElementById("ai-btn");
-            btn.innerText = "GOTOWE! 🤖";
-            setTimeout(() => { btn.innerText = "3. AUTO OPIS 🤖"; }, 2000);
-        }
-    </script>
+  Object.entries(styles).forEach(([name,map])=>{
+    const text=convert(input,map);
 
-    <footer>
-        <b>Unicode Styler PRO MAX</b> - Darmowy generator czcionek i naprawa opisów Instagram.<br>
-        Używaj pogrubionego tekstu i kursywy, aby zwiększyć zasięgi postów.
-    </footer>
+    const div=document.createElement("div");
+    div.className="card";
+
+    const left=document.createElement("div");
+    left.innerHTML=`
+      <div class="badge">${name}</div>
+      <div class="text">${text}</div>
+    `;
+
+    const btn=document.createElement("button");
+    btn.innerText="Kopiuj";
+    btn.onclick=()=>{
+      navigator.clipboard.writeText(text);
+      btn.innerText="OK!";
+      setTimeout(()=>btn.innerText="Kopiuj",1000);
+    };
+
+    div.appendChild(left);
+    div.appendChild(btn);
+    out.appendChild(div);
+  });
+}
+
+function fixIG(){
+  const t=document.getElementById("input");
+  t.value=t.value.replace(/\n/g,"\u2063");
+}
+
+function autoDesc(){
+  const t=document.getElementById("input");
+  t.value=`🔥 ${t.value}
+
+✨ viral content
+📈 grow daily
+👇 follow`;
+}
+
+</script>
 
 </body>
 </html>
