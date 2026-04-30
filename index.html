@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unicode Styler v15 Startup Mode</title>
+<title>Unicode Styler v16</title>
 
 <style>
 body{
-  font-family:Arial;
+  font-family: Arial;
   background: radial-gradient(circle,#0f172a,#020617);
   color:white;
   margin:0;
@@ -34,7 +34,7 @@ body{
   background:#111827;
   padding:20px;
   border-radius:12px;
-  width:300px;
+  width:320px;
 }
 
 input{
@@ -43,6 +43,7 @@ input{
   margin-top:10px;
   border:none;
   border-radius:10px;
+  outline:none;
 }
 
 button{
@@ -71,31 +72,22 @@ button{
   font-size:11px;
 }
 
-/* DASHBOARD */
-.panel{
-  margin-top:10px;
-  display:flex;
-  gap:10px;
-}
-
+/* INPUT */
 textarea{
   width:100%;
-  height:100px;
+  height:110px;
   border:none;
   border-radius:10px;
   padding:10px;
+  margin-top:10px;
 }
 
-.grid{
-  margin-top:15px;
-  display:grid;
-  gap:10px;
-}
-
+/* CARD */
 .card{
   background:#111827;
   padding:12px;
   border-radius:12px;
+  margin-top:10px;
   transition:0.2s;
 }
 
@@ -103,6 +95,7 @@ textarea{
   transform:translateY(-2px);
 }
 
+/* LOCK */
 .locked{
   opacity:0.5;
   position:relative;
@@ -122,8 +115,10 @@ textarea{
 .small{
   font-size:11px;
   opacity:0.7;
+  margin-top:5px;
 }
 
+/* TOAST */
 .toast{
   position:fixed;
   bottom:20px;
@@ -133,6 +128,7 @@ textarea{
   color:black;
   padding:10px 20px;
   border-radius:10px;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -142,47 +138,53 @@ textarea{
 <!-- LOGIN -->
 <div class="login" id="login">
   <div class="loginBox">
-    <h3>🚀 Unicode Styler v15</h3>
-    <input id="user" placeholder="username">
-    <input id="pass" placeholder="password" type="password">
-    <button onclick="login()">Login (FREE)</button>
-    <div class="small">No backend • demo mode</div>
+
+    <h3>🚀 Unicode Styler v16</h3>
+
+    <div style="font-size:12px;opacity:0.7;margin-bottom:10px">
+      Free tool • no payment • no account required
+    </div>
+
+    <input id="user" placeholder="nickname (optional)">
+    <input id="pass" placeholder="password (optional)" type="password">
+
+    <button onclick="login()">Start</button>
+
+    <div class="small">
+      💡 kliknij Start i od razu generuj style
+    </div>
+
   </div>
 </div>
 
+<!-- APP -->
 <div class="app" id="app" style="display:none">
 
   <div class="top">
-    <h3>🚀 Startup Dashboard</h3>
-    <div class="badge">FREE SaaS MODE</div>
+    <h3>🚀 Dashboard</h3>
+    <div class="badge">FREE MODE</div>
   </div>
 
   <textarea id="input" placeholder="Wpisz tekst..."></textarea>
 
-  <div class="panel">
-    <button onclick="fixIG()">IG FIX</button>
-    <button onclick="hook()">VIRAL HOOK</button>
-    <button onclick="exportText()">EXPORT</button>
-    <button onclick="upgrade()">UPGRADE PRO</button>
-  </div>
+  <button onclick="fixIG()">IG FIX</button>
+  <button onclick="hook()">VIRAL HOOK</button>
 
-  <div class="grid" id="out"></div>
+  <div id="out"></div>
 
 </div>
 
 <script>
 
-const styles={
+const styles = {
   Bold:{a:"𝗮",b:"𝗯",c:"𝗰",d:"𝗱",e:"𝗲",f:"𝗳",g:"𝗴",h:"𝗵",i:"𝗶",j:"𝗷",k:"𝗸",l:"𝗹",m:"𝗺",n:"𝗻",o:"𝗼",p:"𝗽",q:"𝗾",r:"𝗿",s:"𝘀",t:"𝘁",u:"𝘂",v:"𝘃",w:"𝘄",x:"𝘅",y:"𝘆",z:"𝘇"},
   Italic:{a:"𝘢",b:"𝘣",c:"𝘤",d:"𝘥",e:"𝘦",f:"𝘧",g:"𝘨",h:"𝘩",i:"𝘪",j:"𝘫",k:"𝘬",l:"𝘭",m:"𝘮",n:"𝘯",o:"𝘰",p:"𝘱",q:"𝘲",r:"𝘳",s:"𝘴",t:"𝘵",u:"𝘶",v:"𝘷",w:"𝘸",x:"𝘹",y:"𝘺",z:"𝘻"},
   Script:{a:"𝓪",b:"𝓫",c:"𝓬",d:"𝓭",e:"𝓮",f:"𝓯",g:"𝓰",h:"𝓱",i:"𝓲",j:"𝓳",k:"𝓴",l:"𝓵",m:"𝓶",n:"𝓷",o:"𝓸",p:"𝓹",q:"𝓺",r:"𝓻",s:"𝓼",t:"𝓽",u:"𝓾",v:"𝓿",w:"𝔀",x:"𝔁",y:"𝔂",z:"𝔃"},
   Glitch:{a:"a̷",b:"b̷",c:"c̷",d:"d̷",e:"e̷",f:"f̷",g:"g̷",h:"h̷",i:"i̷",j:"j̷",k:"k̷",l:"l̷",m:"m̷",n:"n̷",o:"o̷",p:"p̷",q:"q̷",r:"r̷",s:"s̷",t:"t̷",u:"u̷",v:"v̷",w:"w̷",x:"x̷",y:"y̷",z:"z̷"}
 };
 
-let pro=false;
-
-function convert(t,m){
-  return t.split('').map(c=>m[c.toLowerCase()]||c).join('');
+function convert(t,map){
+  return t.split('').map(c=>map[c.toLowerCase()]||c).join('');
 }
 
 /* LOGIN */
@@ -197,6 +199,7 @@ function login(){
 function render(){
   const input=document.getElementById("input").value;
   const out=document.getElementById("out");
+
   out.innerHTML="";
 
   Object.entries(styles).forEach(([name,map])=>{
@@ -206,23 +209,19 @@ function render(){
     const card=document.createElement("div");
     card.className="card";
 
-    if(!pro && name==="Glitch"){
+    if(name==="Glitch"){
       card.classList.add("locked");
     }
 
     card.innerHTML=`
       <b>${name}</b>
       <div style="margin:8px 0">${text}</div>
-      <button>Copy</button>
+      <button>Kopiuj</button>
     `;
 
     card.querySelector("button").onclick=()=>{
-      if(!pro && name==="Glitch"){
-        toast("PRO feature 🔒");
-        return;
-      }
       navigator.clipboard.writeText(text);
-      toast("Copied ✔");
+      toast("Skopiowano ✔");
     };
 
     out.appendChild(card);
@@ -239,28 +238,15 @@ function fixIG(){
 /* VIRAL HOOK */
 function hook(){
   const t=document.getElementById("input");
-  t.value="🚀 VIRAL MODE ON\n\n"+t.value;
+  t.value="🚀 VIRAL MODE\n\n"+t.value;
   toast("Hook added ✔");
 }
 
-/* EXPORT */
-function exportText(){
-  navigator.clipboard.writeText(document.getElementById("input").value);
-  toast("Exported ✔");
-}
-
-/* UPGRADE FAKE */
-function upgrade(){
-  pro=true;
-  toast("PRO unlocked (demo) 🔥");
-  render();
-}
-
 /* TOAST */
-function toast(m){
+function toast(msg){
   const el=document.createElement("div");
   el.className="toast";
-  el.innerText=m;
+  el.innerText=msg;
   document.body.appendChild(el);
   setTimeout(()=>el.remove(),1200);
 }
