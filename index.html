@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unicode Styler v16.5 CLEAN</title>
+<title>Unicode Styler v16.6 FINAL UX</title>
 
 <style>
 body{
@@ -15,7 +15,7 @@ body{
   padding:20px;
 }
 
-.top{
+.header{
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -24,8 +24,8 @@ body{
 .badge{
   background:#22c55e;
   color:black;
-  padding:4px 8px;
-  border-radius:8px;
+  padding:4px 10px;
+  border-radius:10px;
   font-size:11px;
 }
 
@@ -33,11 +33,18 @@ textarea{
   width:100%;
   height:110px;
   border:none;
-  border-radius:10px;
+  border-radius:12px;
   padding:10px;
   margin-top:10px;
   font-size:14px;
   outline:none;
+}
+
+.actions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:10px;
 }
 
 button{
@@ -47,14 +54,11 @@ button{
   border-radius:10px;
   cursor:pointer;
   font-weight:bold;
-  margin:4px 0;
+  font-size:12px;
 }
 
-.panel{
-  display:flex;
-  gap:8px;
-  margin-top:10px;
-  flex-wrap:wrap;
+.grid{
+  margin-top:15px;
 }
 
 .card{
@@ -67,6 +71,12 @@ button{
 
 .card:hover{
   transform:translateY(-2px);
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
 .small{
@@ -84,44 +94,38 @@ button{
   padding:10px 20px;
   border-radius:10px;
   font-weight:bold;
+  box-shadow:0 0 20px rgba(34,197,94,0.3);
 }
 </style>
 </head>
 
 <body>
 
-<div class="top">
-  <h3>🚀 Unicode Styler v16.5</h3>
-  <div class="badge">FREE CLEAN MODE</div>
+<div class="header">
+  <h3>🚀 Unicode Styler v16.6</h3>
+  <div class="badge">FINAL UX</div>
 </div>
 
 <textarea id="input" placeholder="Wpisz tekst..."></textarea>
 
-<div class="panel">
+<div class="actions">
   <button onclick="fixIG()">IG FIX</button>
   <button onclick="hook()">VIRAL HOOK</button>
+  <button onclick="copyAll()">COPY ALL</button>
 </div>
 
-<div id="out"></div>
+<div id="out" class="grid"></div>
 
 <script>
 
 const styles = {
-  Bold:{
-    a:"𝗮",b:"𝗯",c:"𝗰",d:"𝗱",e:"𝗲",f:"𝗳",g:"𝗴",h:"𝗵",i:"𝗶",j:"𝗷",k:"𝗸",l:"𝗹",m:"𝗺",n:"𝗻",o:"𝗼",p:"𝗽",q:"𝗾",r:"𝗿",s:"𝘀",t:"𝘁",u:"𝘂",v:"𝘃",w:"𝘄",x:"𝘅",y:"𝘆",z:"𝘇"
-  },
+  Bold:{a:"𝗮",b:"𝗯",c:"𝗰",d:"𝗱",e:"𝗲",f:"𝗳",g:"𝗴",h:"𝗵",i:"𝗶",j:"𝗷",k:"𝗸",l:"𝗹",m:"𝗺",n:"𝗻",o:"𝗼",p:"𝗽",q:"𝗾",r:"𝗿",s:"𝘀",t:"𝘁",u:"𝘂",v:"𝘃",w:"𝘄",x:"𝘅",y:"𝘆",z:"𝘇"},
 
-  Italic:{
-    a:"𝘢",b:"𝘣",c:"𝘤",d:"𝘥",e:"𝘦",f:"𝘧",g:"𝘨",h:"𝘩",i:"𝘪",j:"𝘫",k:"𝘬",l:"𝘭",m:"𝘮",n:"𝘯",o:"𝘰",p:"𝘱",q:"𝘲",r:"𝘳",s:"𝘴",t:"𝘵",u:"𝘶",v:"𝘷",w:"𝘸",x:"𝘹",y:"𝘺",z:"𝘻"
-  },
+  Italic:{a:"𝘢",b:"𝘣",c:"𝘤",d:"𝘥",e:"𝘦",f:"𝘧",g:"𝘨",h:"𝘩",i:"𝘪",j:"𝘫",k:"𝘬",l:"𝘭",m:"𝘮",n:"𝘯",o:"𝘰",p:"𝘱",q:"𝘲",r:"𝘳",s:"𝘴",t:"𝘵",u:"𝘶",v:"𝘷",w:"𝘸",x:"𝘹",y:"𝘺",z:"𝘻"},
 
-  Script:{
-    a:"𝓪",b:"𝓫",c:"𝓬",d:"𝓭",e:"𝓮",f:"𝓯",g:"𝓰",h:"𝓱",i:"𝓲",j:"𝓳",k:"𝓴",l:"𝓵",m:"𝓶",n:"𝓷",o:"𝓸",p:"𝓹",q:"𝓺",r:"𝓻",s:"𝓼",t:"𝓽",u:"𝓾",v:"𝓿",w:"𝔀",x:"𝔁",y:"𝔂",z:"𝔃"
-  },
+  Script:{a:"𝓪",b:"𝓫",c:"𝓬",d:"𝓭",e:"𝓮",f:"𝓯",g:"𝓰",h:"𝓱",i:"𝓲",j:"𝓳",k:"𝓴",l:"𝓵",m:"𝓶",n:"𝓷",o:"𝓸",p:"𝓹",q:"𝓺",r:"𝓻",s:"𝓼",t:"𝓽",u:"𝓾",v:"𝓿",w:"𝔀",x:"𝔁",y:"𝔂",z:"𝔃"},
 
-  Glitch:{
-    a:"a̷",b:"b̷",c:"c̷",d:"d̷",e:"e̷",f:"f̷",g:"g̷",h:"h̷",i:"i̷",j:"j̷",k:"k̷",l:"l̷",m:"m̷",n:"n̷",o:"o̷",p:"p̷",q:"q̷",r:"r̷",s:"s̷",t:"t̷",u:"u̷",v:"v̷",w:"w̷",x:"x̷",y:"y̷",z:"z̷"
-  }
+  Glitch:{a:"a̷",b:"b̷",c:"c̷",d:"d̷",e:"e̷",f:"f̷",g:"g̷",h:"h̷",i:"i̷",j:"j̷",k:"k̷",l:"l̷",m:"m̷",n:"n̷",o:"o̷",p:"p̷",q:"q̷",r:"r̷",s:"s̷",t:"t̷",u:"u̷",v:"v̷",w:"w̷",x:"x̷",y:"y̷",z:"z̷"}
 };
 
 function convert(text,map){
@@ -142,8 +146,13 @@ function render(){
     card.className="card";
 
     card.innerHTML=`
-      <b>${name}</b>
+      <div class="row">
+        <b>${name}</b>
+        <span class="small">LIVE</span>
+      </div>
+
       <div style="margin:8px 0">${text}</div>
+
       <button>Kopiuj</button>
     `;
 
@@ -166,8 +175,28 @@ function fixIG(){
 /* VIRAL HOOK */
 function hook(){
   const t=document.getElementById("input");
-  t.value="🚀 VIRAL MODE\n\n"+t.value;
+
+  const hooks=[
+    "🚀 VIRAL MODE",
+    "⚡ 1% ludzi to wie",
+    "🔥 MUSISZ TO ZOBACZYĆ",
+    "👀 ZAPISZ TO"
+  ];
+
+  t.value = hooks[Math.floor(Math.random()*hooks.length)] + "\n\n" + t.value;
   toast("Hook added ✔");
+}
+
+/* COPY ALL */
+function copyAll(){
+  const input=document.getElementById("input").value;
+
+  const all = Object.entries(styles).map(([n,m])=>{
+    return n+":\n"+convert(input,m);
+  }).join("\n\n");
+
+  navigator.clipboard.writeText(all);
+  toast("ALL COPIED ✔");
 }
 
 /* TOAST */
@@ -179,7 +208,7 @@ function toast(msg){
   setTimeout(()=>el.remove(),1200);
 }
 
-/* LIVE UPDATE */
+/* LIVE */
 document.getElementById("input").addEventListener("input",render);
 
 render();
