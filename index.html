@@ -1,200 +1,91 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unicode Styler PRO MAX v2</title>
-
-<style>
-body{
-  font-family: Arial, sans-serif;
-  background: radial-gradient(circle at top,#1e293b,#0f172a);
-  color:white;
-  max-width:900px;
-  margin:auto;
-  padding:20px;
-}
-
-h1{margin-bottom:5px}
-.sub{opacity:0.7;margin-bottom:15px}
-
-textarea{
-  width:100%;
-  height:120px;
-  padding:12px;
-  border-radius:12px;
-  border:none;
-  font-size:16px;
-  margin-bottom:10px;
-}
-
-.buttons{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-bottom:15px;
-}
-
-button{
-  background:#22c55e;
-  border:none;
-  padding:10px 14px;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:bold;
-}
-
-button:hover{transform:scale(1.05)}
-
-.preview{
-  background:#0b1220;
-  padding:10px;
-  border-radius:12px;
-  margin-bottom:10px;
-  white-space:pre-wrap;
-}
-
-.card{
-  background:#111827;
-  padding:12px;
-  border-radius:12px;
-  margin-top:10px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.name{font-size:12px;opacity:0.7}
-.text{font-size:16px}
-
-.history{
-  margin-top:10px;
-  font-size:12px;
-  opacity:0.6;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unicode Styler PRO MAX</title>
+    <style>
+        body { font-family: sans-serif; background: #0f172a; color: white; max-width: 600px; margin: auto; padding: 20px; text-align: center; }
+        textarea { width: 100%; height: 120px; padding: 15px; border-radius: 12px; border: 2px solid #334155; background: #1e293b; color: white; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; }
+        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        button { flex: 1; padding: 15px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; color: white; background: #22c55e; }
+        #fix-btn { background: #8b5cf6; }
+        .card { background: #111827; padding: 15px; border-radius: 12px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1f2937; text-align: left; }
+        .name { font-size: 10px; opacity: 0.5; text-transform: uppercase; }
+        .text { font-size: 18px; word-break: break-all; }
+        .copy { background: #3b82f6; width: 70px; padding: 10px; font-size: 12px; }
+    </style>
 </head>
-
 <body>
 
-<h1>🚀 Unicode Styler PRO MAX v2</h1>
-<div class="sub">Live generator + viral tools</div>
+    <h1 style="color: #22c55e;">🚀 Unicode Styler PRO MAX</h1>
+    <p style="opacity: 0.7; font-size: 13px;">Wersja stabilna - Naprawiona</p>
+    
+    <textarea id="txtInput" placeholder="Wpisz tekst..."></textarea>
 
-<textarea id="input" placeholder="Wpisz tekst..." oninput="livePreview()"></textarea>
+    <div class="btn-group">
+        <button onclick="runStyles()">1. GENERUJ STYLE</button>
+        <button id="fix-btn" onclick="runFix()">2. NAPRAW IG</button>
+    </div>
 
-<div class="buttons">
-<button onclick="generate()">Generuj</button>
-<button onclick="fixIG()">Napraw IG</button>
-<button onclick="autoDesc()">🤖 Auto opis</button>
-<button onclick="exportText()">💾 Eksport</button>
-</div>
+    <div id="results"></div>
 
-<div class="preview" id="preview">Live preview...</div>
+    <script>
+        // Mapy znaków
+        const m = {
+            "Bold": {a:"𝗮",b:"𝗯",c:"𝗰",d:"𝗱",e:"𝗲",f:"𝗳",g:"𝗴",h:"𝗵",i:"𝗶",j:"𝗷",k:"𝗸",l:"𝗹",m:"𝗺",n:"𝗻",o:"ᴏ",p:"𝗽",q:"𝗾",r:"𝗿",s:"𝘀",t:"𝘁",u:"𝘂",v:"𝘃",w:"𝘄",x:"𝘅",y:"𝘆",z:"𝘇"},
+            "Italic": {a:"𝘢",b:"𝘣",c:"𝘤",d:"𝘥",e:"𝘦",f:"𝘧",g:"𝘨",h:"𝘩",i:"𝘪",j:"𝘫",k:"𝘬",l:"𝘭",m:"𝘮",n:"𝘯",o:"𝘰",p:"𝘱",q:"𝘲",r:"𝘳",s:"𝘴",t:"𝘵",u:"𝘶",v:"𝘷",w:"𝘸",x:"𝘹",y:"𝘺",z:"𝘻"},
+            "Glitch": {a:"a̷",b:"b̷",c:"c̷",d:"d̷",e:"e̷",f:"f̷",g:"g̷",h:"h̷",i:"i̷",j:"j̷",k:"k̷",l:"l̷",m:"m̷",n:"n̷",o:"o̷",p:"p̷",q:"q̷",r:"r̷",s:"s̷",t:"t̷",u:"u̷",v:"v̷",w:"w̷",x:"x̷",y:"y̷",z:"z̷"}
+        };
 
-<div id="out"></div>
+        function runStyles() {
+            const val = document.getElementById("txtInput").value;
+            const res = document.getElementById("results");
+            res.innerHTML = "";
+            if(!val) return alert("Wpisz tekst!");
 
-<div class="history" id="history"></div>
+            for (const [name, map] of Object.entries(m)) {
+                const converted = val.split('').map(c => {
+                    const l = c.toLowerCase();
+                    const r = map[l] || c;
+                    return c === c.toUpperCase() ? r.toUpperCase() : r;
+                }).join('');
 
-<script>
+                const div = document.createElement("div");
+                div.className = "card";
+                div.innerHTML = `<div><div class="name">${name}</div><div class="text">${converted}</div></div>`;
+                
+                const b = document.createElement("button");
+                b.className = "copy";
+                b.innerText = "Kopiuj";
+                b.onclick = () => {
+                    navigator.clipboard.writeText(converted);
+                    b.innerText = "OK!";
+                    setTimeout(() => b.innerText = "Kopiuj", 1000);
+                };
+                div.appendChild(b);
+                res.appendChild(div);
+            }
+        }
 
-const styles={
- Bold:{a:"𝗮",b:"𝗯",c:"𝗰",d:"𝗱",e:"𝗲",f:"𝗳",g:"𝗴",h:"𝗵",i:"𝗶",j:"𝗷",k:"𝗸",l:"𝗹",m:"𝗺",n:"𝗻",o:"𝗼",p:"𝗽",q:"𝗾",r:"𝗿",s:"𝘀",t:"𝘁",u:"𝘂",v:"𝘃",w:"𝘄",x:"𝘅",y:"𝘆",z:"𝘇"},
- Italic:{a:"𝘢",b:"𝘣",c:"𝘤",d:"𝘥",e:"𝘦",f:"𝘧",g:"𝘨",h:"𝘩",i:"𝘪",j:"𝘫",k:"𝘬",l:"𝘭",m:"𝘮",n:"𝘯",o:"𝘰",p:"𝘱",q:"𝘲",r:"𝘳",s:"𝘴",t:"𝘵",u:"𝘶",v:"𝘷",w:"𝘸",x:"𝘹",y:"𝘺",z:"𝘻"},
- Script:{a:"𝓪",b:"𝓫",c:"𝓬",d:"𝓭",e:"𝓮",f:"𝓯",g:"𝓰",h:"𝓱",i:"𝓲",j:"𝓳",k:"𝓴",l:"𝓵",m:"𝓶",n:"𝓷",o:"𝓸",p:"𝓹",q:"𝓺",r:"𝓻",s:"𝓼",t:"𝓽",u:"𝓾",v:"𝓿",w:"𝔀",x:"𝔁",y:"𝔂",z:"𝔃"},
- SmallCaps:{a:"ᴀ",b:"ʙ",c:"ᴄ",d:"ᴅ",e:"ᴇ",f:"ғ",g:"ɢ",h:"ʜ",i:"ɪ",j:"ᴊ",k:"ᴋ",l:"ʟ",m:"ᴍ",n:"ɴ",o:"ᴏ",p:"ᴘ",q:"ǫ",r:"ʀ",s:"s",t:"ᴛ",u:"ᴜ",v:"ᴠ",w:"ᴡ",x:"x",y:"ʏ",z:"ᴢ"},
- Glitch:{a:"a̷",b:"b̷",c:"c̷",d:"d̷",e:"e̷",f:"f̷",g:"g̷",h:"h̷",i:"i̷",j:"j̷",k:"k̷",l:"l̷",m:"m̷",n:"n̷",o:"o̷",p:"p̷",q:"q̷",r:"r̷",s:"s̷",t:"t̷",u:"u̷",v:"v̷",w:"w̷",x:"x̷",y:"y̷",z:"z̷"},
- Double:{a:"𝕒",b:"𝕓",c:"𝕔",d:"𝕕",e:"𝕖",f:"𝕗",g:"𝕘",h:"𝕙",i:"𝕚",j:"𝕛",k:"𝕜",l:"𝕝",m:"𝕞",n:"𝕟",o:"𝕠",p:"𝕡",q:"𝕢",r:"𝕣",s:"𝕤",t:"𝕥",u:"𝕦",v:"𝕧",w:"𝕨",x:"𝕩",y:"𝕪",z:"𝕫"}
-};
-
-function convert(t,m){
- return t.split('').map(c=>m[c.toLowerCase()]||c).join('');
-}
-
-function livePreview(){
- document.getElementById("preview").innerText =
- document.getElementById("input").value || "Live preview...";
-}
-
-function generate(){
- const input=document.getElementById("input").value;
- const out=document.getElementById("out");
- out.innerHTML="";
-
- Object.entries(styles).forEach(([name,map])=>{
-  const text=convert(input,map);
-
-  const div=document.createElement("div");
-  div.className="card";
-
-  div.innerHTML=`
-   <div>
-    <div class="name">${name}</div>
-    <div class="text">${text}</div>
-   </div>
-  `;
-
-  const btn=document.createElement("button");
-  btn.innerText="Kopiuj";
-  btn.onclick=()=>{
-    navigator.clipboard.writeText(text);
-    saveHistory(text);
-    btn.innerText="OK";
-    setTimeout(()=>btn.innerText="Kopiuj",1000);
-  };
-
-  div.appendChild(btn);
-  out.appendChild(div);
- });
-}
-
-function fixIG(){
- document.getElementById("input").value =
- document.getElementById("input").value.replace(/\n/g,"\u2063");
-}
-
-function autoDesc(){
- const input=document.getElementById("input");
-
- let base=input.value.split("✨")[0].trim();
- if(!base) return;
-
- input.value =
-`🔥 ${base}
-
-✨ viral content
-📈 grow daily
-👇 follow for more`;
-}
-
-function exportText(){
- const content=document.getElementById("out").innerText;
- const blob=new Blob([content],{type:"text/plain"});
- const a=document.createElement("a");
- a.href=URL.createObjectURL(blob);
- a.download="unicode-pro-max.txt";
- a.click();
-}
-
-function saveHistory(text){
- let h=JSON.parse(localStorage.getItem("history")||"[]");
- h.unshift(text);
- h=h.slice(0,5);
- localStorage.setItem("history",JSON.stringify(h));
- renderHistory();
-}
-
-function renderHistory(){
- let h=JSON.parse(localStorage.getItem("history")||"[]");
- document.getElementById("history").innerText =
- "Historia:\n" + h.join("\n---\n");
-}
-
-renderHistory();
-
-</script>
-<div style="margin-top:30px; font-size:14px; opacity:0.7; line-height:1.5">
-<b>Unicode Styler</b> to darmowy generator czcionek online do Instagrama, TikToka i Facebooka.  
-Tworzy style tekstu takie jak bold, italic, script i glitch, które pomagają wyróżnić posty i zwiększyć zasięgi w social media.
-</div>
+        function runFix() {
+            const el = document.getElementById("txtInput");
+            if(!el.value) return alert("Wpisz tekst!");
+            
+            const fixed = el.value.split('\n').join('\u2063\n');
+            el.value = fixed;
+            
+            navigator.clipboard.writeText(fixed).then(() => {
+                const btn = document.getElementById("fix-btn");
+                btn.innerText = "SKOPIOWANO! ✅";
+                btn.style.background = "#10b981";
+                alert("Naprawiono i skopiowano!");
+                setTimeout(() => { 
+                    btn.innerText = "2. NAPRAW IG"; 
+                    btn.style.background = "#8b5cf6"; 
+                }, 2000);
+            });
+        }
+    </script>
 </body>
 </html>
