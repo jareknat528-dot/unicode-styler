@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>TEST JS</h2>
+
+<button onclick="alert('JS DZIAŁA')">Kliknij</button>
+
+<script>
+console.log("JS działa");
+</script>
+
+</body>
+</html>
