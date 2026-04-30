@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unicode Styler PRO MAX v5</title>
+<title>Unicode Styler PRO MAX v6</title>
 
 <style>
 body{
@@ -25,6 +25,7 @@ textarea{
   padding:10px;
   font-size:16px;
   margin-bottom:10px;
+  outline:none;
 }
 
 button{
@@ -35,10 +36,11 @@ button{
   cursor:pointer;
   font-weight:bold;
   margin:5px;
+  transition:0.2s;
 }
 
 button:active{
-  transform: scale(0.97);
+  transform:scale(0.96);
 }
 
 .card{
@@ -57,12 +59,24 @@ button:active{
 .text{
   margin-bottom:8px;
 }
+
+.toast{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#22c55e;
+  color:black;
+  padding:10px 20px;
+  border-radius:10px;
+  font-weight:bold;
+}
 </style>
 </head>
 
 <body>
 
-<h2>🚀 Unicode Styler PRO MAX v5</h2>
+<h2>🚀 Unicode Styler PRO MAX v6</h2>
 
 <textarea id="input" placeholder="Wpisz tekst..."></textarea>
 
@@ -75,6 +89,7 @@ button:active{
 <div id="out"></div>
 
 <script>
+
 const styles = {
   Bold:{a:"𝗮",b:"𝗯",c:"𝗰",d:"𝗱",e:"𝗲",f:"𝗳",g:"𝗴",h:"𝗵",i:"𝗶",j:"𝗷",k:"𝗸",l:"𝗹",m:"𝗺",n:"𝗻",o:"𝗼",p:"𝗽",q:"𝗾",r:"𝗿",s:"𝘀",t:"𝘁",u:"𝘂",v:"𝘃",w:"𝘄",x:"𝘅",y:"𝘆",z:"𝘇"},
 
@@ -99,36 +114,49 @@ function generate(){
   Object.entries(styles).forEach(([name,map])=>{
     const text=convert(input,map);
 
-    const box=document.createElement("div");
-    box.className="card";
+    const card=document.createElement("div");
+    card.className="card";
 
-    box.innerHTML=`
+    const btnId = Math.random().toString(36).slice(2);
+
+    card.innerHTML=`
       <div class="name">${name}</div>
       <div class="text">${text}</div>
-      <button>Kopiuj</button>
+      <button id="${btnId}">Kopiuj</button>
     `;
 
-    const btn=box.querySelector("button");
+    const btn = card.querySelector("button");
     btn.onclick=()=>{
       navigator.clipboard.writeText(text);
       btn.innerText="Skopiowano ✔";
       setTimeout(()=>btn.innerText="Kopiuj",1000);
+      toast("Skopiowano");
     };
 
-    out.appendChild(box);
+    out.appendChild(card);
   });
 }
 
 function fixIG(){
   const t=document.getElementById("input");
   t.value = t.value.replace(/\n/g,"\u2063");
-  alert("IG naprawione ✔");
+  toast("IG naprawione ✔");
 }
 
 function autoDesc(){
   const t=document.getElementById("input");
   t.value = `🔥 ${t.value}\n✨ viral content\n📈 grow daily\n👇 follow`;
+  toast("Opis gotowy 🚀");
 }
+
+function toast(msg){
+  const el=document.createElement("div");
+  el.className="toast";
+  el.innerText=msg;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1500);
+}
+
 </script>
 
 </body>
