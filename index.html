@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unicode Styler PRO MAX v7</title>
+<title>Unicode Styler PRO MAX v8 VIRAL</title>
 
 <style>
 body{
@@ -45,6 +45,18 @@ button:active{transform:scale(0.97)}
   padding:12px;
   border-radius:12px;
   margin-top:10px;
+  position:relative;
+}
+
+.badge{
+  position:absolute;
+  top:10px;
+  right:10px;
+  background:#ef4444;
+  color:white;
+  font-size:10px;
+  padding:3px 8px;
+  border-radius:8px;
 }
 
 .name{
@@ -73,30 +85,27 @@ button:active{transform:scale(0.97)}
 
 <body>
 
-<h2>🚀 Unicode Styler PRO MAX v7</h2>
+<h2>🚀 Unicode Styler PRO MAX v8 VIRAL MODE</h2>
 
 <textarea id="input" placeholder="Wpisz tekst..."></textarea>
 
 <div>
-  <button onclick="generate()">Generuj</button>
+  <button onclick="generate()">🔥 Generuj VIRAL</button>
   <button onclick="fixIG()">Napraw IG</button>
-  <button onclick="autoDesc()">🤖 Auto opis</button>
-  <button onclick="exportAll()">💾 Eksport</button>
+  <button onclick="autoDesc()">🤖 Auto hook</button>
 </div>
 
 <div id="out"></div>
 
 <script>
 
+let copyCount = 0;
+
 const styles = {
   Bold:{a:"𝗮",b:"𝗯",c:"𝗰",d:"𝗱",e:"𝗲",f:"𝗳",g:"𝗴",h:"𝗵",i:"𝗶",j:"𝗷",k:"𝗸",l:"𝗹",m:"𝗺",n:"𝗻",o:"𝗼",p:"𝗽",q:"𝗾",r:"𝗿",s:"𝘀",t:"𝘁",u:"𝘂",v:"𝘃",w:"𝘄",x:"𝘅",y:"𝘆",z:"𝘇"},
-
   Italic:{a:"𝘢",b:"𝘣",c:"𝘤",d:"𝘥",e:"𝘦",f:"𝘧",g:"𝘨",h:"𝘩",i:"𝘪",j:"𝘫",k:"𝘬",l:"𝘭",m:"𝘮",n:"𝘯",o:"𝘰",p:"𝘱",q:"𝘲",r:"𝘳",s:"𝘴",t:"𝘵",u:"𝘶",v:"𝘷",w:"𝘸",x:"𝘹",y:"𝘺",z:"𝘻"},
-
   Script:{a:"𝓪",b:"𝓫",c:"𝓬",d:"𝓭",e:"𝓮",f:"𝓯",g:"𝓰",h:"𝓱",i:"𝓲",j:"𝓳",k:"𝓴",l:"𝓵",m:"𝓶",n:"𝓷",o:"𝓸",p:"𝓹",q:"𝓺",r:"𝓻",s:"𝓼",t:"𝓽",u:"𝓾",v:"𝓿",w:"𝔀",x:"𝔁",y:"𝔂",z:"𝔃"},
-
   SmallCaps:{a:"ᴀ",b:"ʙ",c:"ᴄ",d:"ᴅ",e:"ᴇ",f:"ғ",g:"ɢ",h:"ʜ",i:"ɪ",j:"ᴊ",k:"ᴋ",l:"ʟ",m:"ᴍ",n:"ɴ",o:"ᴏ",p:"ᴘ",q:"ǫ",r:"ʀ",s:"s",t:"ᴛ",u:"ᴜ",v:"ᴠ",w:"ᴡ",x:"x",y:"ʏ",z:"ᴢ"},
-
   Double:{a:"𝕒",b:"𝕓",c:"𝕔",d:"𝕕",e:"𝕖",f:"𝕗",g:"𝕘",h:"𝕙",i:"𝕚",j:"𝕛",k:"𝕜",l:"𝕝",m:"𝕞",n:"𝕟",o:"𝕠",p:"𝕡",q:"𝕢",r:"𝕣",s:"𝕤",t:"𝕥",u:"𝕦",v:"𝕧",w:"𝕨",x:"𝕩",y:"𝕪",z:"𝕫"}
 };
 
@@ -116,47 +125,46 @@ function generate(){
     card.className="card";
 
     card.innerHTML=`
+      <div class="badge">VIRAL</div>
       <div class="name">${name}</div>
       <div class="text">${text}</div>
-      <button onclick="copyText(this,'${encodeURIComponent(text)}')">Kopiuj</button>
+      <button>Kopiuj (${copyCount})</button>
     `;
+
+    const btn=card.querySelector("button");
+
+    btn.onclick=()=>{
+      navigator.clipboard.writeText(text);
+      copyCount++;
+      btn.innerText=`Skopiowano ✔ (${copyCount})`;
+      setTimeout(()=>btn.innerText=`Kopiuj (${copyCount})`,1000);
+      toast("🔥 Skopiowano +1 viral");
+    };
 
     out.appendChild(card);
   });
 }
 
-function copyText(btn,text){
-  const decoded = decodeURIComponent(text);
-  navigator.clipboard.writeText(decoded);
-
-  btn.innerText="Skopiowano ✔";
-  setTimeout(()=>btn.innerText="Kopiuj",1000);
-
-  toast("Skopiowano");
-}
-
 function fixIG(){
   const t=document.getElementById("input");
   t.value = t.value.replace(/\n/g,"\u2063");
-  toast("IG naprawione ✔");
+  toast("IG FIX ✔");
 }
 
 function autoDesc(){
   const t=document.getElementById("input");
-  t.value = `🔥 ${t.value}\n✨ viral content\n📈 grow daily\n👇 follow`;
-  toast("Opis gotowy 🚀");
-}
 
-function exportAll(){
-  const out=document.getElementById("out").innerText;
+  const hooks = [
+    "TO JEST VIRAL 🔥",
+    "99% ludzi tego nie wie 👀",
+    "Prosty trik, który zmienia wszystko ⚡",
+    "Zapisz zanim zniknie 🚀"
+  ];
 
-  const blob = new Blob([out], {type:"text/plain"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="unicode-styler-export.txt";
-  a.click();
+  const pick = hooks[Math.floor(Math.random()*hooks.length)];
 
-  toast("Eksport pobrany 💾");
+  t.value = `${pick}\n\n${t.value}\n\n👇 follow po więcej`;
+  toast("🔥 VIRAL HOOK dodany");
 }
 
 function toast(msg){
