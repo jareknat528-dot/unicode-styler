@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unicode Styler PRO MAX</title>
+    <title>Unicode Styler PRO MAX v2</title>
     <style>
         body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at top,#1e293b,#0f172a); color: white; max-width: 800px; margin: auto; padding: 20px; min-height: 100vh; }
         h1 { margin-bottom: 5px; text-align: center; color: #22c55e; }
@@ -13,42 +13,45 @@
         .buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
         button { background: #22c55e; color: white; border: none; padding: 12px 18px; border-radius: 10px; cursor: pointer; font-weight: bold; flex: 1; min-width: 140px; transition: 0.2s; }
         button:hover { transform: scale(1.05); background: #16a34a; }
-        .card { background: #111827; padding: 15px; border-radius: 12px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1f2937; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card { background: #111827; padding: 15px; border-radius: 12px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1f2937; }
         .name { font-size: 11px; opacity: 0.5; text-transform: uppercase; letter-spacing: 1px; }
         .text { font-size: 18px; margin-top: 5px; word-break: break-all; }
         .copy-btn { background: #3b82f6; max-width: 100px; }
+        footer { margin-top: 40px; opacity: 0.5; font-size: 12px; text-align: center; line-height: 1.5; }
     </style>
 </head>
 <body>
 
-    <h1>🚀 Unicode Styler PRO MAX</h1>
-    <div class="sub">Wpisz tekst, aby wygenerować style lub naprawić opisy IG</div>
+    <h1>🚀 Unicode Styler PRO MAX v2</h1>
+    <div class="sub">Wszystkie style + Viral Tools w jednym miejscu</div>
 
-    <textarea id="input" placeholder="Wpisz tekst tutaj..."></textarea>
+    <textarea id="input" placeholder="Wpisz tekst tutaj..." oninput="updatePreview()"></textarea>
 
     <div class="buttons">
-        <button onclick="mainGenerate()">1. GENERUJ STYLE</button>
-        <button id="fix-btn" onclick="mainFix()" style="background: #8b5cf6;">2. NAPRAW IG (COPY)</button>
+        <button onclick="generateAll()">1. GENERUJ STYLE</button>
+        <button id="fix-btn" onclick="fixIG()">2. NAPRAW IG (COPY)</button>
+        <button id="auto-btn" onclick="autoDesc()">3. AUTO OPIS 🤖</button>
     </div>
 
     <div id="output"></div>
 
     <script>
-        const maps = {
+        const allMaps = {
             "Bold": {a:"𝗮",b:"𝗯",c:"𝗰",d:"𝗱",e:"𝗲",f:"𝗳",g:"𝗴",h:"𝗵",i:"𝗶",j:"𝗷",k:"𝗸",l:"𝗹",m:"𝗺",n:"𝗻",o:"𝗼",p:"𝗽",q:"𝗾",r:"𝗿",s:"𝘀",t:"𝘁",u:"𝘂",v:"𝘃",w:"𝘄",x:"𝘅",y:"𝘆",z:"𝘇"},
-            "Italic": {a:"𝘢",b:"𝘣",c:"𝘤",d:"𝘥",e:"𝘦",f:"𝘧",g:"𝘨",h:"𝘩",i:"𝘪",j:"𝘫",k:"𝘬",l:"𝘭",m:"𝘮",n:"𝘯",o:"𝘰",p:"𝘱",q:"𝘲",r:"𝘳",s:"𝘴",t:"𝘵",u:"𝘶",v:"ᴠ",w:"𝘸",x:"𝘹",y:"𝘺",z:"𝘻"},
+            "Italic": {a:"𝘢",b:"𝘣",c:"𝘤",d:"𝘥",e:"𝘦",f:"𝘧",g:"𝘨",h:"𝘩",i:"𝘪",j:"ජ",k:"𝘬",l:"𝘭",m:"𝘮",n:"𝘯",o:"𝘰",p:"𝘱",q:"𝘲",r:"𝘳",s:"𝘴",t:"𝘵",u:"𝘶",v:"𝘷",w:"𝘸",x:"𝘹",y:"𝘺",z:"𝘻"},
             "Script": {a:"𝓪",b:"𝓫",c:"𝓬",d:"𝓭",e:"𝓮",f:"𝓯",g:"𝓰",h:"𝓱",i:"𝓲",j:"𝓳",k:"𝓴",l:"𝓵",m:"𝓶",n:"𝓷",o:"𝓸",p:"𝓹",q:"𝓺",r:"𝓻",s:"𝓼",t:"𝓽",u:"𝓾",v:"𝓿",w:"𝔀",x:"𝔁",y:"𝔂",z:"𝔃"},
+            "SmallCaps": {a:"ᴀ",b:"ʙ",c:"ᴄ",d:"ᴅ",e:"ᴇ",f:"ғ",g:"ɢ",h:"ʜ",i:"ɪ",j:"ᴊ",k:"ᴋ",l:"ʟ",m:"ᴍ",n:"ɴ",o:"ᴏ",p:"ᴘ",q:"ǫ",r:"ʀ",s:"s",t:"ᴛ",u:"ᴜ",v:"ᴠ",w:"ᴡ",x:"x",y:"ʏ",z:"ᴢ"},
+            "Double": {a:"𝕒",b:"𝕓",c:"𝕔",d:"𝕕",e:"𝕖",f:"𝕗",g:"𝕘",h:"𝕙",i:"𝕚",j:"𝕛",k:"𝕜",l:"𝕝",m:"𝕞",n:"𝕟",o:"𝕠",p:"𝕡",q:"𝕢",r:"𝕣",s:"𝕤",t:"𝕥",u:"𝕦",v:"𝕧",w:"𝕨",x:"𝕩",y:"𝕪",z:"𝕫"},
             "Glitch": {a:"a̷",b:"b̷",c:"c̷",d:"d̷",e:"e̷",f:"f̷",g:"g̷",h:"h̷",i:"i̷",j:"j̷",k:"k̷",l:"l̷",m:"m̷",n:"n̷",o:"o̷",p:"p̷",q:"q̷",r:"r̷",s:"s̷",t:"t̷",u:"u̷",v:"v̷",w:"w̷",x:"x̷",y:"y̷",z:"z̷"}
         };
 
-        function mainGenerate() {
+        function generateAll() {
             const val = document.getElementById("input").value;
             const out = document.getElementById("output");
             out.innerHTML = "";
             if(!val) return alert("Wpisz tekst!");
 
-            Object.entries(maps).forEach(([name, map]) => {
+            Object.entries(allMaps).forEach(([name, map]) => {
                 const converted = val.split('').map(c => {
                     const l = c.toLowerCase();
                     const res = map[l] || c;
@@ -72,21 +75,36 @@
             });
         }
 
-        function mainFix() {
+        function fixIG() {
             const el = document.getElementById("input");
-            if(!el.value) return alert("Wpisz tekst!");
-            
+            if(!el.value) return alert("Wpisz tekst z enterami!");
             const fixed = el.value.split('\n').join('\u2063\n');
             el.value = fixed;
-            
             navigator.clipboard.writeText(fixed).then(() => {
                 const b = document.getElementById("fix-btn");
-                b.innerText = "SKOPIOWANO! ✅";
+                b.innerText = "GOTOWE! ✅";
                 b.style.background = "#10b981";
-                alert("Tekst naprawiony i skopiowany do schowka! Wklej go na Instagram.");
                 setTimeout(() => { b.innerText = "2. NAPRAW IG (COPY)"; b.style.background = "#8b5cf6"; }, 2000);
             });
         }
+
+        function autoDesc() {
+            const el = document.getElementById("input");
+            let val = el.value || "Twój niesamowity post";
+            el.value = `🔥 ${val}\n\n✨ viral content\n📈 grow daily\n👇 follow for more`;
+            const b = document.getElementById("auto-btn");
+            b.innerText = "WYGENEROWANO! 🤖";
+            setTimeout(() => { b.innerText = "3. AUTO OPIS 🤖"; }, 2000);
+        }
+
+        function updatePreview() {
+            // Funkcja pomocnicza do podglądu, jeśli będziesz chciał go dodać
+        }
     </script>
+
+    <footer>
+        <b>Unicode Styler PRO MAX</b> - Najlepsze narzędzie dla twórców.<br>
+        Pogrubiony tekst na FB, kursywa na IG i naprawa akapitów.
+    </footer>
 </body>
 </html>
